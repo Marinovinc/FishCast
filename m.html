@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#06121f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="FishCast">
+<title>FishCast &mdash; mobile</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root{--bg:#06121f;--card:rgba(10,22,38,.94);--card2:rgba(14,28,46,.97);--bd:#1f3650;--acc:#16e0ff;--grn:#8dff3a;--ink:#dfeaf5;--mut:#8fb0cc}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);overscroll-behavior:none}
+  #map{position:absolute;inset:0}
+  .leaflet-container{background:var(--bg)}
+  .leaflet-control-zoom{display:none}
+  .leaflet-control-attribution{background:rgba(6,18,31,.7)!important;color:#6f8ba0!important;font-size:9px}
+  .leaflet-control-attribution a{color:#8fb0cc!important}
+  /* ---- legacy panel: nascosto (il motore lo referenzia ma la UI Windy non lo usa) ---- */
+  #panel,#panelOpen{display:none!important}
+  /* ---- TOP BAR ---- */
+  #topbar{position:fixed;z-index:1200;top:0;left:0;right:0;display:flex;gap:8px;align-items:center;
+    padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 10px;background:linear-gradient(#06121fdd,#06121f00);pointer-events:none}
+  #topbar>*{pointer-events:auto}
+  .pill{flex:1;min-width:0;display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--bd);
+    border-radius:22px;padding:8px 10px 8px 13px;box-shadow:0 4px 18px #0008}
+  .pill .brand{font-weight:800;font-size:13px;color:var(--acc);white-space:nowrap}
+  .pill .mag{color:var(--mut);font-size:13px}
+  .pill select{flex:1;min-width:0;background:transparent;border:none;color:var(--ink);font-size:13.5px;outline:none}
+  .pill select option{background:#0e2034;color:#dfeaf5}
+  .iconbtn{width:40px;height:40px;flex:0 0 auto;border-radius:50%;border:1px solid var(--bd);background:var(--card);
+    color:var(--acc);font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px #0008;cursor:pointer}
+  /* ---- LEGEND ---- */
+  #legend{position:fixed;z-index:1150;left:10px;top:calc(env(safe-area-inset-top,0px) + 62px);background:var(--card);
+    border:1px solid var(--bd);border-radius:12px;padding:8px 10px;font-size:11px;color:#cfe0f2;max-width:158px;box-shadow:0 4px 16px #0007}
+  #legend .row{display:flex;align-items:center;gap:6px;margin:2px 0}
+  #legend i{width:13px;height:13px;border-radius:3px;flex:0 0 auto;border:1px solid rgba(255,255,255,.25)}
+  /* ---- RIGHT RAIL ---- */
+  #rail{position:fixed;z-index:1200;right:10px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px}
+  .railbtn{width:52px;height:52px;border-radius:16px;border:1px solid var(--bd);background:var(--card);color:var(--ink);
+    font-size:21px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+    box-shadow:0 4px 18px #0008;cursor:pointer;position:relative;padding:0;font-family:inherit}
+  .railbtn small{font-size:8px;color:var(--mut);font-weight:700;letter-spacing:.2px}
+  .railbtn input{display:none}
+  .railbtn.active,.railbtn:has(input:checked){background:#123a52;border-color:var(--acc);color:var(--acc);box-shadow:0 0 0 2px #16e0ff55,0 4px 18px #0008}
+  .railbtn.active small,.railbtn:has(input:checked) small{color:var(--acc)}
+  .railbtn.mark.active{background:#213a18;border-color:var(--grn);color:var(--grn)}
+  .railbtn.mark.active small{color:var(--grn)}
+  /* ---- INFO CARD ---- */
+  #info{position:fixed;z-index:1150;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
+    background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px 13px;font-size:13px;box-shadow:0 6px 22px #0009;max-width:560px;margin:0 auto}
+  #info b{color:var(--acc)} #info .sub{color:var(--mut);font-size:11px}
+  /* ---- PROFILE SHEET ---- */
+  #profile{position:fixed;z-index:1160;left:0;right:0;bottom:0;background:var(--card2);border-top:1px solid var(--bd);
+    border-radius:16px 16px 0 0;padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 10px);box-shadow:0 -6px 26px #000a}
+  #profile .phd{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:3px}
+  #profile .phd b{color:var(--acc)}
+  #profCv{display:block;width:100%;height:102px;cursor:crosshair}
+  #profClose{background:none;border:none;color:#cfe0f2;font-size:18px;line-height:1;cursor:pointer}
+  #preyRow{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+  #preyRow .plab{font-size:11px;color:var(--mut);align-self:center;margin-right:2px}
+  /* ---- MODALS (markForm + preyPanel) come bottom sheet ---- */
+  #markForm,#preyPanel{position:fixed;z-index:1300;left:0;right:0;bottom:0;background:var(--card2);border-top:1px solid var(--bd);
+    border-radius:18px 18px 0 0;padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 16px);box-shadow:0 -8px 32px #000b;max-height:82vh;overflow:auto}
+  .mfHd{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px}
+  .mfHd b{color:var(--acc);font-size:15px}
+  #mfClose,#preyClose{background:none;border:none;color:#cfe0f2;font-size:20px;cursor:pointer}
+  #mfAuto{background:#0c1c2e;border:1px solid var(--bd);border-radius:9px;padding:9px 11px;font-size:12px;color:var(--mut);margin-bottom:10px;line-height:1.5}
+  #mfAuto b{color:var(--acc)}
+  #markForm input{width:100%;padding:11px;margin-bottom:9px;border-radius:9px;border:1px solid #2c416c;background:#0e1b30;color:#fff;font-size:15px}
+  .mfBtns{display:flex;gap:9px}
+  .mfBtns button{flex:1;padding:12px;border-radius:9px;border:1px solid #2c416c;background:#11243c;color:var(--ink);font-weight:700;font-size:14px;cursor:pointer}
+  #mfSave{background:var(--grn)!important;color:#0a2a06!important;border-color:var(--grn)!important}
+  .ptime{display:flex;gap:6px;margin:2px 0 8px}
+  .ptime span{flex:1;text-align:center;cursor:pointer;font-size:13px;padding:8px 4px;border-radius:9px;border:1px solid #23415f;background:#0c2033;color:#cfe0f2}
+  .ptime span.on{background:var(--acc);color:#04121e;border-color:var(--acc);font-weight:700}
+  .pzone{border-top:1px solid var(--bd);margin-top:9px;padding-top:8px}
+  .pzt{font-size:13px;font-weight:700;color:var(--grn);margin-bottom:6px}
+  .pchips{display:flex;flex-wrap:wrap;gap:6px}
+  .psub{font-size:11.5px;color:var(--mut);margin:2px 0 5px}
+  .pchip{background:#0c2033;border:1px solid #23415f;border-radius:20px;padding:5px 11px;font-size:13px;color:var(--ink);white-space:nowrap;cursor:pointer}
+  .pchip.warn{border-color:#ffb020;color:#ffd68a}
+  .pchip.off{opacity:.42}
+  /* ---- BACKDROP + LAYER SHEET ---- */
+  #backdrop{position:fixed;inset:0;z-index:1250;background:#0009;opacity:0;visibility:hidden;transition:.2s}
+  #backdrop.on{opacity:1;visibility:visible}
+  #layerSheet{position:fixed;z-index:1260;left:0;right:0;bottom:0;transform:translateY(103%);transition:transform .26s cubic-bezier(.4,0,.2,1);
+    background:var(--card2);border-top:1px solid var(--bd);border-radius:20px 20px 0 0;
+    padding:2px 11px calc(env(safe-area-inset-bottom,0px) + 10px);box-shadow:0 -10px 36px #000c;max-height:56vh;overflow:auto}
+  #layerSheet.on{transform:translateY(0)}
+  .grab{width:30px;height:3px;border-radius:2px;background:#2b4056;margin:5px auto 1px}
+  .sheetH{display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--card2);padding:2px 0 5px;z-index:2}
+  .sheetH b{color:var(--ink);font-size:13px;font-weight:600}
+  #sheetClose{background:none;border:none;color:var(--mut);font-size:18px;cursor:pointer;line-height:1}
+  .seg{display:flex;gap:2px;margin:1px 0 4px;background:rgba(255,255,255,.04);border-radius:7px;padding:2px}
+  .seg label{flex:1;text-align:center;padding:4px;border-radius:5px;color:var(--mut);font-size:11.5px;font-weight:600;cursor:pointer}
+  .seg label:has(input:checked){background:var(--acc);color:#04121e}
+  .seg input{display:none}
+  .grpT{font-size:8.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);margin:6px 2px 3px;font-weight:600;opacity:.6}
+  .lgrid{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+  .chip{display:flex;align-items:center;gap:5px;padding:5px 7px;border-radius:7px;border:1px solid #223a52;background:rgba(255,255,255,.03);color:var(--ink);font-size:11.5px;font-weight:500;line-height:1.05;cursor:pointer;transition:.12s}
+  .chip input{display:none}
+  .chip::before{content:"";width:6px;height:6px;border-radius:50%;background:#33506b;flex:0 0 auto;transition:.12s}
+  .chip:has(input:checked){border-color:var(--acc);background:rgba(22,224,255,.12);color:#eafcff}
+  .chip:has(input:checked)::before{background:var(--acc);box-shadow:0 0 6px var(--acc)}
+  .rng{display:flex;align-items:center;gap:6px;color:var(--mut);font-size:10.5px;margin:4px 2px}
+  .rng input[type=range]{flex:1;accent-color:var(--acc);height:3px}
+  .rng b{color:var(--ink);min-width:32px;text-align:right;font-weight:600;font-size:10.5px}
+  #sdbDateRow{align-items:center}
+  #sdbDate{flex:1;background:rgba(255,255,255,.05);color:#fff;border:1px solid var(--bd);border-radius:6px;padding:4px;font-size:11.5px}
+  .acts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;margin-top:6px}
+  .act{padding:6px 4px;border-radius:7px;border:1px solid #223a52;background:rgba(255,255,255,.03);color:var(--ink);font-weight:600;font-size:10.5px;cursor:pointer;text-align:center}
+  .act:active{background:rgba(22,224,255,.13)}
+  .foot2{display:flex;gap:5px;margin-top:7px}
+  .foot2 a{flex:1;text-align:center;text-decoration:none;font-size:11.5px;border-radius:7px;padding:6px;border:1px solid var(--bd)}
+  .foot2 a.g{color:var(--acc);border-color:rgba(22,224,255,.4)}
+  .foot2 a.c{color:var(--mut)}
+  /* ---- popup + pin (identici all'originale: le divIcon del motore usano queste classi) ---- */
+  .leaflet-popup-content-wrapper{background:#0e2034;color:#dfeaf5;border:1px solid #1f3650}
+  .leaflet-popup-tip{background:#0e2034;border:1px solid #1f3650}
+  .leaflet-popup-content b{color:#16e0ff}
+  .prDelBtn{margin-top:6px;padding:6px 10px;border-radius:6px;border:1px solid #ff5d7a;background:#2a1420;color:#ff9bb0;font-size:13px;cursor:pointer}
+  .prpin{font-size:20px;line-height:1;filter:drop-shadow(0 1px 2px #000)}
+  .canalpin{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:15px;background:rgba(126,66,224,.92);border:2px solid #fff;border-radius:50%;box-shadow:0 1px 5px rgba(0,0,0,.6)}
+  .canalpin.near{background:rgba(40,190,120,.95)}
+  .homepin{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:17px;background:#8dff3a;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 7px rgba(0,0,0,.6)}
+  .homelbl{background:rgba(141,255,58,.95);color:#04121e;font-weight:800;font-size:11px;border:none;border-radius:8px;padding:1px 7px;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+  .homelbl::before{display:none}
+  .rmk{width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;background:#ff5be0;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.6);cursor:grab}
+  .rlbl{position:absolute;transform:translate(-50%,-50%);background:rgba(255,91,224,.95);color:#fff;font-weight:800;font-size:12px;padding:2px 8px;border-radius:10px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<!-- panel legacy nascosto: il motore referenzia questi id -->
+<div id="panel" style="display:none"><button id="panelHide"></button></div>
+<div id="panelOpen" style="display:none"></div>
+
+<!-- ===== TOP BAR ===== -->
+<div id="topbar">
+  <div class="pill">
+    <span class="brand">FishCast</span>
+    <span class="mag">&#128269;</span>
+    <select id="place"></select>
+  </div>
+  <button id="btnAddPlace" class="iconbtn" title="Salva questo punto come localit&agrave;">&#43;</button>
+  <a href="guida.html" class="iconbtn" title="Guida" style="text-decoration:none">?</a>
+</div>
+
+<!-- ===== LEGEND ===== -->
+<div id="legend" style="display:none"></div>
+
+<!-- ===== RIGHT RAIL ===== -->
+<div id="rail">
+  <div class="railbtn" id="layersBtn">&#127899;<small>Livelli</small></div>
+  <button class="railbtn" id="btnGps">&#128205;<small>GPS</small></button>
+  <label class="railbtn"><input type="checkbox" id="lRuler">&#128207;<small>Righello</small></label>
+  <button class="railbtn mark" id="btnMark">&#127907;<small>Segna</small></button>
+  <button class="railbtn" id="btnPrey">&#128031;<small>Prede</small></button>
+</div>
+
+<!-- ===== INFO CARD ===== -->
+<div id="info" style="display:none"></div>
+
+<!-- ===== PROFILE SHEET ===== -->
+<div id="profile" style="display:none">
+  <div class="phd"><span id="profTxt"></span><button id="profClose" title="Chiudi">&#10005;</button></div>
+  <canvas id="profCv" width="900" height="192"></canvas>
+  <div id="preyRow"></div>
+</div>
+
+<!-- ===== PREY PANEL ===== -->
+<div id="preyPanel" style="display:none">
+  <div class="mfHd"><b>&#127907; Prede probabili &mdash; litorale</b><button id="preyClose">&#10005;</button></div>
+  <div id="preyTimeSel" class="ptime">
+    <span data-t="all" class="on" onclick="setPreyTime('all')">Tutti</span>
+    <span data-t="g" onclick="setPreyTime('g')">&#9728;&#65039; Giorno</span>
+    <span data-t="n" onclick="setPreyTime('n')">&#127769; Notte</span>
+  </div>
+  <div id="preyBody"></div>
+</div>
+
+<!-- ===== MARK FORM ===== -->
+<div id="markForm" style="display:none">
+  <div class="mfHd"><b>&#128205; Punto / cattura</b><button id="mfClose" title="Chiudi">&#10005;</button></div>
+  <div id="mfAuto"></div>
+  <input id="mfSpecie" list="specieList" placeholder="Specie pescata (opz.)" autocomplete="off">
+  <datalist id="specieList">
+    <option>Spigola (branzino)</option><option>Orata</option><option>Mormora</option><option>Sarago</option>
+    <option>Occhiata</option><option>Leccia</option><option>Ombrina</option><option>Grongo</option>
+    <option>Anguilla</option><option>Cefalo (muggine)</option><option>Sugarello</option><option>Aguglia</option>
+    <option>Tracina</option><option>Sogliola</option><option>Razza</option><option>Boga</option><option>Salpa</option>
+  </datalist>
+  <input id="mfPeso" placeholder="Peso / taglia (opz.)" autocomplete="off">
+  <input id="mfNote" placeholder="Note: esca, mareggiata, orario&hellip; (opz.)" autocomplete="off">
+  <div class="mfBtns"><button id="mfCancel">Annulla</button><button id="mfSave">Salva</button></div>
+</div>
+
+<!-- ===== LAYER SHEET ===== -->
+<div id="backdrop"></div>
+<div id="layerSheet">
+  <div class="grab"></div>
+  <div class="sheetH"><b>Livelli</b><button id="sheetClose">&#10005;</button></div>
+
+  <div class="seg">
+    <label><input type="radio" name="base" id="baseSat" checked>&#128752;&#65039; Satellitare</label>
+    <label><input type="radio" name="base" id="baseOsm">&#128506;&#65039; Mappa</label>
+  </div>
+
+  <div class="grpT">Batimetria</div>
+  <div class="lgrid">
+    <label class="chip"><input type="checkbox" id="lSdb">Profondit&agrave; SDB</label>
+    <label class="chip"><input type="checkbox" id="lSdbComp">Composito</label>
+    <label class="chip"><input type="checkbox" id="lIso">Linee batim.</label>
+    <label class="chip"><input type="checkbox" id="lIsoFine">Fitte 0,5&nbsp;m</label>
+    <label class="chip"><input type="checkbox" id="lCanal">Canaloni</label>
+  </div>
+  <div class="rng" id="sdbDateRow" style="display:none"><span>Data</span><select id="sdbDate"></select></div>
+  <div class="rng">Prof. <input type="range" id="ovSdb" min="0" max="100" value="70"><b id="ovSdbV">70%</b></div>
+
+  <div class="grpT">Fondale &amp; carte</div>
+  <div class="lgrid">
+    <label class="chip"><input type="checkbox" id="lContours" checked>Isobate EMODnet</label>
+    <label class="chip"><input type="checkbox" id="lSeamark">Carta nautica</label>
+    <label class="chip"><input type="checkbox" id="lSub">Substrato</label>
+    <label class="chip"><input type="checkbox" id="lPos">Posidonia</label>
+    <label class="chip"><input type="checkbox" id="lMarks" checked>I miei punti</label>
+  </div>
+  <div class="rng">Habitat <input type="range" id="ovHab" min="0" max="100" value="70"><b id="ovHabV">70%</b></div>
+
+  <div class="acts">
+    <button class="act" id="btnHome">&#127968; Partenza</button>
+    <button class="act" id="btnCalib">&#127919; Calibra</button>
+    <button class="act" id="btnOffline">&#11015; Offline</button>
+  </div>
+  <div class="foot2"><a class="g" href="guida.html">&#10067; Guida</a><a class="c" href="index.html?desktop">&#128421;&#65039; Versione PC</a></div>
+</div>
+
+<!-- wiring del guscio Windy (i controlli sono nativi: qui solo apri/chiudi il pannello livelli) -->
+<script>
+(function(){
+  var sheet=document.getElementById('layerSheet'), bd=document.getElementById('backdrop');
+  function open(){ sheet.classList.add('on'); bd.classList.add('on'); }
+  window.closeSheet=function(){ sheet.classList.remove('on'); bd.classList.remove('on'); };
+  document.getElementById('layersBtn').addEventListener('click',open);
+  document.getElementById('sheetClose').addEventListener('click',window.closeSheet);
+  bd.addEventListener('click',window.closeSheet);
+})();
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/geotiff@2.1.3/dist-browser/geotiff.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/proj4@2.11.0/dist/proj4.js"></script>
+<script src="engine.js"></script>
+<script>if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(reg){reg.update&&reg.update();}).catch(function(){});
+  var refreshing=false; navigator.serviceWorker.addEventListener('controllerchange',function(){ if(refreshing)return; refreshing=true; location.reload(); });});}</script>
+</body>
+</html>

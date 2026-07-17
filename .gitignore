@@ -1,0 +1,4 @@
+# screenshot e script di test (non pubblicati)
+_*.png
+_*.py
+__pycache__/

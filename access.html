@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#06121f">
+<title>FishCast — Accesso</title>
+<style>
+  :root{--bg:#06121f;--bg2:#081a2c;--card:#0e2033;--line:#1f3650;--cy:#16e0ff;--grn:#8dff3a;--ink:#dfeaf5;--sub:#8fb0cc;--warn:#ffd54a;--err:#ff6b6b}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%}
+  body{background:radial-gradient(700px 300px at 50% -80px,rgba(22,224,255,.14),transparent),linear-gradient(180deg,var(--bg),var(--bg2) 55%,var(--bg));
+    color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    display:flex;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 22px) 16px calc(env(safe-area-inset-bottom,0px) + 22px)}
+  .app{width:100%;max-width:420px;display:flex;flex-direction:column}
+  .proto{font-size:10.5px;color:var(--sub);border:1px dashed #2c416c;border-radius:8px;padding:6px 9px;text-align:center;margin-bottom:14px}
+  .logo{font-size:17px;font-weight:800;color:var(--cy);text-align:center;letter-spacing:.3px}
+  .htitle{font-size:23px;font-weight:800;text-align:center;margin:12px 0 3px}
+  .hsub{font-size:13.5px;color:var(--sub);text-align:center;line-height:1.45;margin-bottom:16px}
+  .offer{border:1px solid var(--cy);border-radius:16px;padding:14px;background:rgba(22,224,255,.08);text-align:center;margin-bottom:14px}
+  .offer .lbl{font-size:10px;letter-spacing:.6px;color:var(--cy);font-weight:800}
+  .offer .price{font-size:40px;font-weight:800;color:#eafcff;line-height:1.05}
+  .offer .price small{font-size:15px;font-weight:600;color:var(--sub)}
+  .offer .then{font-size:12px;color:var(--sub);margin-top:3px}
+  .plan{border:1px solid var(--line);border-radius:13px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin:7px 0;background:rgba(255,255,255,.02);cursor:pointer;transition:.12s}
+  .plan.sel{border-color:var(--cy);background:rgba(22,224,255,.10)}
+  .plan .rad{width:20px;height:20px;border-radius:50%;border:2px solid #3a5570;flex:0 0 auto;transition:.12s}
+  .plan.sel .rad{border-color:var(--cy);background:radial-gradient(circle,var(--cy) 42%,transparent 46%)}
+  .plan .pn{font-size:14.5px;font-weight:600}
+  .plan .pd{font-size:11.5px;color:var(--sub)}
+  .plan .amt{margin-left:auto;text-align:right;font-size:14.5px;font-weight:800;color:#eafcff}
+  .plan .amt small{font-size:11px;color:var(--sub);font-weight:600}
+  .best{display:inline-block;font-size:9px;background:rgba(141,255,58,.16);color:var(--grn);border:1px solid var(--grn);border-radius:6px;padding:1px 6px;font-weight:800;margin-left:6px;vertical-align:middle}
+  .btn{display:block;width:100%;background:var(--cy);color:#04121e;border:none;border-radius:13px;padding:15px;font-weight:800;text-align:center;font-size:16px;margin-top:14px;cursor:pointer;font-family:inherit}
+  .btn.g{background:var(--grn);color:#0a2a06}
+  .btn.ghost{background:none;border:1px solid var(--line);color:var(--ink)}
+  .btn:disabled{opacity:.5}
+  .link{display:block;color:var(--cy);text-align:center;font-size:14px;margin-top:16px;cursor:pointer;background:none;border:none;width:100%;font-family:inherit}
+  .fine{font-size:10.5px;color:#6f8aa6;text-align:center;margin-top:18px;line-height:1.6}
+  .fine a{color:#6f8aa6}
+  .field{width:100%;background:#0e1b30;border:1px solid #2c416c;border-radius:11px;padding:15px;color:#fff;font-size:18px;text-align:center;letter-spacing:2px;margin:8px 0;text-transform:uppercase;font-family:inherit}
+  .field:focus{outline:none;border-color:var(--cy)}
+  .field.email{letter-spacing:0;font-size:15px;text-align:left;text-transform:none}
+  .msg{font-size:13px;text-align:center;margin:6px 0;min-height:18px}
+  .msg.err{color:var(--err)} .msg.ok{color:var(--grn)}
+  .flist{font-size:13px;color:#cfe0f0;margin:8px 0}
+  .flist div{margin:7px 0;display:flex;gap:8px;align-items:center}
+  .flist .ck{color:var(--grn);font-weight:800}
+  .big{font-size:74px;text-align:center;line-height:1.1;margin:8px 0}
+  .storebar{border:1px dashed #2c416c;border-radius:11px;padding:11px;font-size:11.5px;color:var(--sub);text-align:center;margin-top:6px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="proto">Prototipo · il pagamento reale avviene via App&nbsp;Store/Google&nbsp;Play nell'app; il codice sar&agrave; validato dal server</div>
+  <div class="logo">🎣 FishCast</div>
+
+  <!-- ===== VISTA 1: ACQUISTO / PAYWALL ===== -->
+  <section id="view-paywall">
+    <div class="htitle">Sblocca tutte le funzioni</div>
+    <div class="hsub">Fondale satellitare, canaloni, righello di lancio, catture e uso offline.</div>
+
+    <div class="offer">
+      <div class="lbl">&#9733; OFFERTA DI LANCIO</div>
+      <div class="price">&euro;3,99 <small>/ primi 6 mesi</small></div>
+      <div class="then">poi si rinnova col piano scelto qui sotto</div>
+    </div>
+
+    <div class="plan sel" data-plan="annual" onclick="selectPlan(this)">
+      <div class="rad"></div>
+      <div><div class="pn">Annuale <span class="best">RISPARMI ~2 MESI</span></div><div class="pd">dopo i 6 mesi</div></div>
+      <div class="amt">&euro;10<small>/anno</small></div>
+    </div>
+    <div class="plan" data-plan="monthly" onclick="selectPlan(this)">
+      <div class="rad"></div>
+      <div><div class="pn">Mensile</div><div class="pd">dopo i 6 mesi</div></div>
+      <div class="amt">&euro;1<small>/mese</small></div>
+    </div>
+
+    <button class="btn" onclick="buy()">Sblocca &mdash; &euro;3,99</button>
+    <button class="link" onclick="show('activate')">Ho un codice di attivazione</button>
+    <div class="fine">Pagamento gestito da App&nbsp;Store / Google&nbsp;Play &middot; si rinnova, disdici quando vuoi<br><a href="privacy.html">Privacy</a> &middot; <a href="guida.html">Guida</a></div>
+  </section>
+
+  <!-- ===== VISTA 2: ATTIVAZIONE CON CODICE ===== -->
+  <section id="view-activate" class="hidden">
+    <div class="htitle">Hai un codice?</div>
+    <div class="hsub">Inserisci il codice ricevuto (regalo, promo o acquistato sul sito). Nessuna password.</div>
+
+    <input id="code" class="field" placeholder="FISH-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="16" oninput="onCodeInput()">
+    <input id="email" class="field email" placeholder="Email (facoltativa, per ricevuta e recupero)" autocomplete="email" inputmode="email">
+    <div id="actMsg" class="msg"></div>
+    <button id="actBtn" class="btn g" onclick="activate()">Attiva</button>
+
+    <div class="storebar">&#128274; Il codice viene verificato una volta, poi l'app funziona <b>offline</b></div>
+    <div class="flist">
+      <div><span class="ck">&#10003;</span> Attivazione immediata</div>
+      <div><span class="ck">&#10003;</span> Valida su questo dispositivo</div>
+      <div><span class="ck">&#10003;</span> Nessun account, nessuna password</div>
+    </div>
+
+    <button class="link" onclick="show('paywall')">Non hai un codice? Vedi i piani</button>
+    <div class="fine">Prova il prototipo con il codice demo: <b>FISH-DEMO-2026</b></div>
+  </section>
+
+  <!-- ===== VISTA 3: SBLOCCATO ===== -->
+  <section id="view-unlocked" class="hidden">
+    <div class="big">&#9989;</div>
+    <div class="htitle">Tutto sbloccato</div>
+    <div class="hsub">Licenza attiva. Le funzioni restano disponibili anche senza rete.</div>
+
+    <div class="offer" style="border-color:var(--grn);background:rgba(141,255,58,.08)">
+      <div class="lbl" style="color:var(--grn)">LICENZA ATTIVA</div>
+      <div class="price" style="font-size:20px" id="untilTxt">&mdash;</div>
+      <div class="then" id="srcTxt">&mdash;</div>
+    </div>
+
+    <div class="flist">
+      <div><span class="ck">&#10003;</span> Profondit&agrave; SDB + isobate</div>
+      <div><span class="ck">&#10003;</span> Canaloni &middot; righello &middot; profilo</div>
+      <div><span class="ck">&#10003;</span> Prede &middot; catture &middot; offline</div>
+    </div>
+
+    <button class="btn" onclick="goToMap()">Vai alla mappa</button>
+    <button class="link" onclick="signOut()">Rimuovi licenza (test)</button>
+  </section>
+</div>
+
+<script>
+"use strict";
+// ====== Abilitazione (entitlement) — PROTOTIPO client-side ======
+// In produzione: la ricevuta IAP e la validazione del codice avvengono lato store/server.
+// Qui salviamo l'abilitazione in locale per far funzionare il flusso e il gate.
+var LS='pr_license';
+function getLicense(){ try{ return JSON.parse(localStorage.getItem(LS)||'null'); }catch(e){ return null; } }
+function isActive(l){ return !!(l && l.until && new Date(l.until).getTime() > Date.now()); }
+function setLicense(source, plan, months){
+  var until=new Date(); until.setMonth(until.getMonth()+months);
+  var lic={source:source, plan:plan, until:until.toISOString(), ts:new Date().toISOString()};
+  localStorage.setItem(LS, JSON.stringify(lic)); return lic;
+}
+function fmtDate(iso){ try{ return new Date(iso).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'}); }catch(e){ return iso; } }
+
+// ====== Navigazione tra le viste ======
+function show(name){
+  ['paywall','activate','unlocked'].forEach(function(v){
+    document.getElementById('view-'+v).classList.toggle('hidden', v!==name);
+  });
+  if(name==='unlocked') renderUnlocked();
+  try{ window.scrollTo(0,0); }catch(e){}
+}
+function renderUnlocked(){
+  var l=getLicense()||{};
+  document.getElementById('untilTxt').innerHTML = 'attiva fino al '+fmtDate(l.until);
+  var src = l.source==='code' ? 'attivata con codice' : 'abbonamento '+(l.plan==='annual'?'annuale':'mensile');
+  document.getElementById('srcTxt').innerHTML = src+' &middot; rinnovo dallo store';
+}
+
+// ====== Paywall ======
+var selectedPlan='annual';
+function selectPlan(el){
+  document.querySelectorAll('#view-paywall .plan').forEach(function(p){ p.classList.remove('sel'); });
+  el.classList.add('sel'); selectedPlan=el.getAttribute('data-plan');
+}
+function buy(){
+  // PROTOTIPO: sul web non esiste l'IAP dello store. Nell'app nativa qui parte StoreKit/Play Billing.
+  var ok = confirm('Prototipo web: qui, nell\'app scaricata, si aprirebbe il pagamento di App Store / Google Play.\\n\\nVuoi simulare uno sblocco di prova (6 mesi)?');
+  if(ok){ setLicense('iap', selectedPlan, 6); show('unlocked'); }
+}
+
+// ====== Attivazione codice ======
+function onCodeInput(){ document.getElementById('actMsg').textContent=''; }
+function activate(){
+  var raw=(document.getElementById('code').value||'').trim().toUpperCase();
+  var msg=document.getElementById('actMsg');
+  if(!raw){ msg.className='msg err'; msg.textContent='Inserisci un codice.'; return; }
+  // PROTOTIPO di validazione (in produzione: chiamata alla license function del server).
+  // Accetta il codice demo o un formato FISH-XXXX-XXXX.
+  var demo = raw==='FISH-DEMO-2026';
+  var wellFormed = /^FISH-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(raw);
+  if(demo || wellFormed){
+    setLicense('code', '6m', 6);
+    msg.className='msg ok'; msg.textContent='Codice valido! Attivato.';
+    setTimeout(function(){ show('unlocked'); }, 500);
+  } else {
+    msg.className='msg err'; msg.textContent='Codice non valido. Formato: FISH-XXXX-XXXX';
+  }
+}
+
+// ====== Uscita ======
+function goToMap(){ location.href='./'; }   // apre l'app (index -> redirect a m.html su mobile)
+function signOut(){ localStorage.removeItem(LS); show('paywall'); }
+
+// ====== Avvio: se già attivo, mostra "sbloccato"; altrimenti paywall ======
+(function(){
+  var l=getLicense();
+  show(isActive(l) ? 'unlocked' : 'paywall');
+})();
+</script>
+</body>
+</html>

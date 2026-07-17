@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FishCast — Informativa sulla privacy</title>
+<style>
+  :root{--bg:#06121f;--card:#0e1f33;--line:#1f3650;--cy:#16e0ff;--txt:#dfeaf5;--sub:#8fb0cc;--warn:#ffd54a}
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(#06121f,#081a2c);color:#dfeaf5;font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:0 0 60px}
+  header{position:sticky;top:0;z-index:5;background:rgba(6,18,31,.92);backdrop-filter:blur(6px);border-bottom:1px solid #1f3650;padding:14px 18px}
+  header h1{margin:0;font-size:19px;letter-spacing:.2px}
+  header .t{color:#8fb0cc;font-size:12.5px;margin-top:2px}
+  .wrap{max-width:760px;margin:0 auto;padding:0 18px}
+  h2{font-size:17px;margin:26px 0 6px;color:#16e0ff}
+  h3{font-size:15px;margin:16px 0 4px}
+  p{margin:8px 0;color:#cfe0f0}
+  ul{margin:8px 0;padding-left:20px}li{margin:5px 0;color:#cfe0f0}
+  .lead{background:#0e1f33;border:1px solid #1f3650;border-radius:14px;padding:16px 18px;margin:18px 0}
+  .lead b{color:#16e0ff}
+  .ok{background:#12283f;border-left:3px solid #16e0ff;border-radius:8px;padding:10px 13px;margin:12px 0;font-size:14.5px;color:#bfd6ea}
+  .warn{background:#2a2413;border-left:3px solid #ffd54a;border-radius:8px;padding:10px 13px;margin:12px 0;font-size:14px;color:#e9dcae}
+  .fill{color:#ffd54a;font-weight:700}
+  a{color:#16e0ff}
+  .foot{color:#6f8aa6;font-size:12.5px;text-align:center;margin-top:30px;border-top:1px solid #1f3650;padding-top:16px}
+  code{background:#11243c;border:1px solid #2a4870;border-radius:6px;padding:1px 6px;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Informativa sulla privacy — FishCast</h1>
+  <div class="t">In vigore dal 17 luglio 2026 · versione 1.0</div>
+</header>
+
+<div class="wrap">
+
+  <div class="lead">
+    <b>In sintesi.</b> FishCast è pensata per rispettare la tua privacy: <b>non raccogliamo dati personali</b>, non abbiamo profili pubblicitari e non tracciamo i tuoi spostamenti. I tuoi punti, le catture e le impostazioni restano <b>solo sul tuo telefono</b>. La posizione GPS è usata <b>solo sul dispositivo</b> e non viene mai inviata a noi.
+  </div>
+
+  <h2>1. Titolare</h2>
+  <p>Il titolare del trattamento è <span class="fill">[Nome/Ragione sociale del titolare]</span>, <span class="fill">[indirizzo]</span>. Per qualsiasi domanda su questa informativa puoi scrivere a <span class="fill">[email di contatto]</span>.</p>
+
+  <h2>2. Quali dati tratta l'app</h2>
+
+  <h3>2.1 Dati salvati solo sul tuo dispositivo</h3>
+  <p>Le seguenti informazioni vengono salvate <b>localmente</b> sul telefono (memoria dell'app) e <b>non sono trasmesse</b> a noi né a terzi:</p>
+  <ul>
+    <li>I tuoi <b>punti e catture</b> (specie, peso, note, coordinate, profondità, tipo di fondo, data/ora);</li>
+    <li>Le tue <b>località salvate</b> e il punto di partenza;</li>
+    <li>Le <b>calibrazioni di profondità</b> e le <b>zone porto</b> che definisci;</li>
+    <li>Le <b>preferenze</b> e le mappe/aree tenute in <b>cache</b> per l'uso offline.</li>
+  </ul>
+  <div class="ok">Questi dati restano sul dispositivo finché non li elimini dall'app o disinstalli l'app. Puoi cancellarli in qualsiasi momento.</div>
+
+  <h3>2.2 Posizione (GPS)</h3>
+  <p>Se attivi la funzione "Sei qui", l'app usa la tua posizione <b>solo per mostrarti sulla mappa</b> mentre pesci. La posizione <b>è elaborata sul dispositivo</b> e <b>non viene inviata</b> a noi né a terzi, e non viene registrata come cronologia dei tuoi spostamenti.</p>
+
+  <h3>2.3 Attivazione e licenza</h3>
+  <p>Per sbloccare l'app tramite un <b>codice di attivazione</b>, l'app invia al nostro servizio di licenza il <b>codice</b> e un <b>identificativo casuale</b> generato dall'app (un UUID), al solo scopo di <b>verificare la validità della licenza</b>. Questo identificativo <b>non è collegato alla tua identità</b>, non è un identificativo hardware, non viene usato per tracciarti e non è condiviso con terzi. Non richiediamo password né dati personali. Se sblocchi l'app con un <b>acquisto in-app</b>, il pagamento è gestito dallo store (Apple/Google) secondo le loro informative; noi non riceviamo i dati della tua carta.</p>
+
+  <h2>3. Servizi di terze parti (mappe e dati)</h2>
+  <p>Per mostrare le mappe e calcolare la batimetria, l'app scarica dati — quando sei online — direttamente da servizi cartografici pubblici di terze parti:</p>
+  <ul>
+    <li>Immagini satellitari e mappe (es. Esri, OpenStreetMap);</li>
+    <li>Batimetria e habitat (EMODnet);</li>
+    <li>Immagini Sentinel-2 (Copernicus, tramite AWS Open Data);</li>
+    <li>Informazioni su porti/segnali (OpenStreetMap / Overpass).</li>
+  </ul>
+  <p>Quando l'app contatta questi servizi, ricevono le normali informazioni tecniche di una richiesta web (ad esempio l'area di mappa richiesta e l'indirizzo IP del dispositivo, come per qualsiasi sito). <b>Non inviamo loro dati personali</b> né le tue catture. Il trattamento da parte di questi fornitori è regolato dalle rispettive informative.</p>
+
+  <h2>4. Cosa NON facciamo</h2>
+  <ul>
+    <li>Nessuna <b>raccolta di dati personali</b> su nostri server (a parte la verifica del codice, §2.3).</li>
+    <li>Nessuna <b>pubblicità</b> e nessun <b>tracciamento</b> o profilazione.</li>
+    <li>Nessuna <b>vendita o condivisione</b> dei tuoi dati.</li>
+    <li>Nessun <b>account social</b> obbligatorio.</li>
+  </ul>
+
+  <h2>5. Permessi richiesti</h2>
+  <ul>
+    <li><b>Posizione</b> — per la funzione "Sei qui" (facoltativa, la concedi tu).</li>
+    <li><b>Rete/Internet</b> — per scaricare mappe e dati dai servizi pubblici.</li>
+    <li><b>Archiviazione/Memoria</b> — per salvare la cache offline e i tuoi dati sul dispositivo.</li>
+  </ul>
+
+  <h2>6. Minori</h2>
+  <p>L'app non è rivolta specificamente ai minori e non raccoglie consapevolmente dati personali di minori. Non essendovi raccolta di dati personali, il suo uso è adatto a un pubblico generico.</p>
+
+  <h2>7. I tuoi diritti</h2>
+  <p>Poiché non raccogliamo dati personali collegati alla tua identità, non deteniamo un profilo che ti riguarda. I dati dell'app sono sul tuo dispositivo e sotto il tuo controllo: puoi vederli, modificarli ed eliminarli direttamente nell'app. Per domande o richieste relative alla privacy (inclusi, ove applicabili, i diritti previsti dal <b>GDPR</b> — accesso, rettifica, cancellazione, opposizione) puoi contattarci all'indirizzo al §1. Se in futuro introdurremo trattamenti di dati personali, aggiorneremo questa informativa di conseguenza.</p>
+
+  <h2>8. Modifiche a questa informativa</h2>
+  <p>Potremo aggiornare questa informativa (ad esempio per nuove funzioni). La versione aggiornata sarà pubblicata a questo indirizzo con la nuova data di entrata in vigore. Ti invitiamo a consultarla periodicamente.</p>
+
+  <h2>9. Contatti</h2>
+  <p>Titolare: <span class="fill">[Nome/Ragione sociale]</span> — Email: <span class="fill">[email di contatto]</span></p>
+
+  <div class="warn">Nota per la pubblicazione: i campi in giallo <span class="fill">[…]</span> vanno completati (titolare, indirizzo, email). Quando aggiungeremo le lingue dell'app, pubblicheremo anche la versione in inglese di questa informativa.</div>
+
+  <hr style="border:none;border-top:1px solid #1f3650;margin:26px 0">
+
+  <h2>English summary</h2>
+  <p><b>FishCast</b> respects your privacy. We do <b>not collect personal data</b>, show no ads and do no tracking. Your marks, catches and settings stay <b>only on your device</b>. GPS is used <b>on-device only</b> to show your position and is never sent to us. To unlock the app via an activation code, the app sends only the <b>code</b> and a <b>random device identifier</b> to our licensing service, solely to validate the licence; this is not linked to your identity and not used for tracking. In-app purchases are handled by the app stores. The app downloads maps and data directly from public third-party services (Esri, OpenStreetMap, EMODnet, Copernicus/Sentinel, Overpass), whose own privacy policies apply. A full English version will be published alongside the English app. Contact: <span class="fill">[contact email]</span>.</p>
+
+  <div class="foot">FishCast · Informativa sulla privacy · v1.0 · 17/07/2026</div>
+
+</div>
+</body>
+</html>

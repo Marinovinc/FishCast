@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<script>/* cellulare -> versione mobile (Windy-like). Escape: ?desktop */(function(){try{var f=location.search.indexOf('desktop')>=0;var m=window.matchMedia&&(matchMedia('(pointer:coarse)').matches||innerWidth<820);if(m&&!f){location.replace('m.html'+location.hash);}}catch(e){}})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#06121f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="FishCast">
+<title>FishCast — sottocosta per la pesca da riva</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  html,body{margin:0;height:100%;background:#06121f;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#dfeaf5}
+  #map{position:absolute;inset:0}
+  .leaflet-container{background:#06121f}
+  #title{position:fixed;z-index:1000;top:8px;left:50%;transform:translateX(-50%);
+    background:rgba(10,22,38,.94);border:1px solid #1f3650;border-radius:10px;padding:6px 13px;font-size:13px;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+  #title small{font-weight:400;color:#8fb0cc;font-size:10px}
+  #panel{position:fixed;z-index:1000;top:8px;right:8px;width:210px;background:rgba(10,22,38,.94);border:1px solid #1f3650;border-radius:10px;
+    padding:8px 11px;font-size:12px;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+  #panel h4{margin:0 0 5px;color:#16e0ff;font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+  #panel label{display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:600;padding:2px 0}
+  #panel .grp{border-top:1px solid #1f3650;margin-top:6px;padding-top:6px}
+  #panel .rng{display:flex;align-items:center;gap:6px;color:#8fb0cc}
+  #panel input[type=range]{flex:1;accent-color:#16e0ff}
+  #info{position:fixed;z-index:1000;left:8px;bottom:8px;right:8px;max-width:520px;background:rgba(10,22,38,.95);border:1px solid #1f3650;
+    border-radius:10px;padding:8px 12px;font-size:12.5px;display:none;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+  #info b{color:#16e0ff}
+  #info .sub{color:#8fb0cc;font-size:11px}
+  #legend{position:fixed;z-index:1000;left:8px;top:52px;background:rgba(10,22,38,.92);border:1px solid #1f3650;border-radius:8px;
+    padding:6px 9px;font-size:11px;color:#cfe0f2;max-width:150px;display:none}
+  #legend .row{display:flex;align-items:center;gap:6px;margin:2px 0}
+  #legend i{width:13px;height:13px;border-radius:3px;flex:0 0 auto;border:1px solid rgba(255,255,255,.25)}
+  .hint{color:#8fb0cc;font-size:11px;margin-top:4px}
+  .leaflet-popup-content-wrapper{background:#0e2034;color:#dfeaf5;border:1px solid #1f3650}
+  .leaflet-popup-tip{background:#0e2034;border:1px solid #1f3650}
+  #panelOpen{position:fixed;z-index:1001;top:8px;right:8px;display:none;align-items:center;gap:6px;cursor:pointer;
+    background:rgba(10,22,38,.94);border:1px solid #16e0ff;border-radius:10px;padding:8px 12px;color:#16e0ff;font-weight:800;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+  #panelHide{float:right;font-weight:800;font-size:13px;color:#8fb0cc;background:none;border:none;cursor:pointer;line-height:1;padding:0 2px;margin-left:6px}
+  #profile{position:fixed;z-index:1001;left:8px;right:8px;bottom:8px;max-width:520px;background:rgba(10,22,38,.96);border:1px solid #1f3650;
+    border-radius:10px;padding:7px 10px 4px;display:none;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+  #profile .phd{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;margin-bottom:3px}
+  #profile .phd b{color:#16e0ff}
+  #profile canvas{display:block;width:100%;height:96px;cursor:crosshair}
+  #profClose{background:none;border:none;color:#cfe0f2;font-size:15px;cursor:pointer;line-height:1}
+  #preyRow{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+  #preyRow .pchip{background:#0c2033;border:1px solid #23415f;border-radius:20px;padding:3px 9px;font-size:11.5px;color:#dfeaf5;white-space:nowrap}
+  #preyRow .pchip.warn{border-color:#ffb020;color:#ffd68a}
+  #preyRow .plab{font-size:11px;color:#8fb0cc;align-self:center;margin-right:2px}
+  #preyPanel{position:fixed;z-index:1200;left:50%;top:50%;transform:translate(-50%,-50%);width:min(94vw,420px);max-height:82vh;overflow:auto;
+    background:rgba(10,22,38,.98);border:1px solid #1f3650;border-radius:12px;padding:12px 14px;display:none;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+  #preyPanel .mfHd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
+  #preyPanel .mfHd b{color:#16e0ff;font-size:13px}
+  #preyClose{background:none;border:none;color:#cfe0f2;font-size:16px;cursor:pointer}
+  .pzone{border-top:1px solid #1f3650;margin-top:8px;padding-top:7px}
+  .pzt{font-size:12px;font-weight:700;color:#8dff3a;margin-bottom:5px}
+  .pzone .pchips{display:flex;flex-wrap:wrap;gap:5px}
+  .psub{font-size:11px;color:#8fb0cc;margin:2px 0 4px}
+  #preyPanel .pchip{background:#0c2033;border:1px solid #23415f;border-radius:20px;padding:3px 9px;font-size:12px;color:#dfeaf5}
+  #preyPanel .pchip.warn{border-color:#ffb020;color:#ffd68a}
+  #preyPanel .pchip.off{opacity:.42}
+  .ptime{display:flex;gap:6px;margin:2px 0 6px}
+  .ptime span{flex:1;text-align:center;cursor:pointer;font-size:12px;padding:6px 4px;border-radius:8px;border:1px solid #23415f;background:#0c2033;color:#cfe0f2}
+  .ptime span.on{background:#16e0ff;color:#04121e;border-color:#16e0ff;font-weight:700}
+  #btnMark.active{background:#1e3a63;border-color:#8dff3a}
+  #btnGps.active{background:#1e3a63;border-color:#16e0ff;color:#fff}
+  #btnCalib.active{background:#2a4d18;border-color:#8dff3a;color:#fff}
+  #markForm{position:fixed;z-index:1200;left:50%;bottom:10px;transform:translateX(-50%);width:min(94vw,360px);
+    background:rgba(10,22,38,.98);border:1px solid #1f3650;border-radius:12px;padding:12px 14px;display:none;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+  #markForm .mfHd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  #markForm .mfHd b{color:#16e0ff}
+  #mfClose{background:none;border:none;color:#cfe0f2;font-size:16px;cursor:pointer}
+  #mfAuto{background:#0c1c2e;border:1px solid #1f3650;border-radius:8px;padding:7px 9px;font-size:11.5px;color:#8fb0cc;margin-bottom:8px;line-height:1.5}
+  #mfAuto b{color:#16e0ff}
+  #markForm input{width:100%;padding:9px;margin-bottom:8px;border-radius:7px;border:1px solid #2c416c;background:#0e1b30;color:#fff;font-size:14px}
+  #markForm .mfBtns{display:flex;gap:8px}
+  #markForm .mfBtns button{flex:1;padding:10px;border-radius:7px;border:1px solid #2c416c;background:#11243c;color:#dfeaf5;font-weight:700;font-size:13px;cursor:pointer}
+  #mfSave{background:#8dff3a!important;color:#0a2a06!important;border-color:#8dff3a!important}
+  .prpin{font-size:20px;line-height:1;filter:drop-shadow(0 1px 2px #000)}
+  .canalpin{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:15px;background:rgba(126,66,224,.92);border:2px solid #fff;border-radius:50%;box-shadow:0 1px 5px rgba(0,0,0,.6)}
+  .canalpin.near{background:rgba(40,190,120,.95)}
+  .homepin{width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:17px;background:#8dff3a;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 7px rgba(0,0,0,.6)}
+  .homelbl{background:rgba(141,255,58,.95);color:#04121e;font-weight:800;font-size:11px;border:none;border-radius:8px;padding:1px 7px;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+  .homelbl::before{display:none}
+  .rmk{width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;background:#ff5be0;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.6);cursor:grab}
+  .rlbl{position:absolute;transform:translate(-50%,-50%);background:rgba(255,91,224,.95);color:#fff;font-weight:800;font-size:12px;padding:2px 8px;border-radius:10px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+  .leaflet-popup-content b{color:#16e0ff}
+  .prDelBtn{margin-top:6px;padding:5px 9px;border-radius:6px;border:1px solid #ff5d7a;background:#2a1420;color:#ff9bb0;font-size:12px;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="title">FishCast &mdash; A9<br><small>litorale &middot; primi 200&ndash;300 m</small></div>
+
+<div id="panelOpen">&#9776; Comandi</div>
+<div id="panel">
+  <h4>Livelli <button id="panelHide" title="Nascondi il pannello">&#10005;</button><a href="guida.html" style="float:right;font-weight:600;font-size:11px;color:#16e0ff;text-decoration:none;border:1px solid #16e0ff;border-radius:6px;padding:1px 8px">&#10067; Guida</a></h4>
+  <div class="rng" style="margin-bottom:8px"><select id="place" style="flex:1;background:#11243c;color:#fff;border:1px solid #1f3650;border-radius:6px;font-size:12px;padding:3px"></select><button id="btnAddPlace" title="Salva questo punto come nuova localit&agrave;" style="margin-left:5px;padding:3px 10px;border-radius:6px;border:1px solid #16e0ff;background:#11243c;color:#16e0ff;font-weight:800;cursor:pointer">&#43;</button></div>
+  <label><input type="radio" name="base" id="baseSat" checked> Satellitare (vedi il fondale)</label>
+  <label><input type="radio" name="base" id="baseOsm"> Mappa (OSM)</label>
+  <div class="grp">
+    <label title="Batimetria da satellite Sentinel-2 (10 m, sottocosta 0-18 m). Il metodo giusto per il sottocosta. Stima, non dato ufficiale."><input type="checkbox" id="lSdb"> <b style="color:#8dff3a">Profondità satellite 10 m (SDB)</b></label>
+    <label title="Composito: media di più scene Sentinel-2 senza nuvole -> meno onde/torbidità, più preciso (più lento)"><input type="checkbox" id="lSdbComp"> &nbsp;&nbsp;&#8627; composito multi-data (+preciso)</label>
+    <label title="Linee di profondità (isobate) calcolate dalla SDB, con etichetta in metri"><input type="checkbox" id="lIso"> &nbsp;&nbsp;&#8627; linee batimetriche (isobate)</label>
+    <label title="Linee ogni 0,5 m tra 0 e 2 m: la fascia della risacca (mormore/spigole)"><input type="checkbox" id="lIsoFine"> &nbsp;&nbsp;&nbsp;&nbsp;&#8627; fitte 0,5 m sottoriva (0-2 m)</label>
+    <label title="Rileva e colora i canaloni (truogoli/rip channel) piu' profondi tra le barre"><input type="checkbox" id="lCanal"> &nbsp;&nbsp;&#8627; canaloni (truogoli/rip)</label>
+    <label><input type="checkbox" id="lContours" checked> Isobate EMODnet (offshore)</label>
+    <label title="Carta nautica OpenSeaMap: segnali, boe, e scandagli dove mappati (ODbL)"><input type="checkbox" id="lSeamark"> Carta nautica (OpenSeaMap)</label>
+    <div class="rng" id="sdbDateRow" style="display:none"><span>Data</span><select id="sdbDate" style="flex:1;background:#11243c;color:#fff;border:1px solid #1f3650;border-radius:6px;font-size:11px;padding:2px"></select></div>
+    <label><input type="checkbox" id="lSub"> Substrato (sabbia/roccia)</label>
+    <label><input type="checkbox" id="lPos"> Posidonia</label>
+    <div class="rng" title="Trasparenza della mappa di profondità (SDB + batimetria)">Prof. <input type="range" id="ovSdb" min="0" max="100" value="70"><span id="ovSdbV" style="min-width:34px;text-align:right;color:#16e0ff;font-weight:700">70%</span></div>
+    <div class="rng" title="Trasparenza di substrato e Posidonia">Habitat <input type="range" id="ovHab" min="0" max="100" value="70"><span id="ovHabV" style="min-width:34px;text-align:right;color:#16e0ff;font-weight:700">70%</span></div>
+  </div>
+  <div class="grp">
+    <label><input type="checkbox" id="lRuler"> &#128207; Righello lancio</label>
+    <label><input type="checkbox" id="lMarks" checked> &#128205; I miei punti/catture</label>
+    <button id="btnMark" style="width:100%;margin-top:5px;padding:6px;border-radius:7px;border:1px solid #16e0ff;background:#11243c;color:#8dff3a;font-weight:700;font-size:12px;cursor:pointer">&#10133; Segna punto / cattura</button>
+    <button id="btnPrey" style="width:100%;margin-top:5px;padding:6px;border-radius:7px;border:1px solid #16e0ff;background:#11243c;color:#16e0ff;font-weight:700;font-size:12px;cursor:pointer">&#127907; Prede probabili</button>
+  </div>
+  <div class="grp">
+    <button id="btnGps" style="width:100%;padding:6px;border-radius:7px;border:1px solid #16e0ff;background:#11243c;color:#16e0ff;font-weight:700;font-size:12px;cursor:pointer">&#128205; Sei qui (GPS)</button>
+    <button id="btnHome" style="width:100%;margin-top:5px;padding:6px;border-radius:7px;border:1px solid #1f3650;background:#11243c;color:#dfeaf5;font-weight:600;font-size:11.5px;cursor:pointer">&#127968; Imposta partenza qui</button>
+    <button id="btnCalib" style="width:100%;margin-top:5px;padding:6px;border-radius:7px;border:1px solid #8dff3a;background:#11243c;color:#8dff3a;font-weight:700;font-size:11.5px;cursor:pointer">&#127919; Calibra profondit&agrave; (punto noto)</button>
+    <button id="btnOffline" style="width:100%;margin-top:5px;padding:6px;border-radius:7px;border:1px solid #ffd54a;background:#11243c;color:#ffd54a;font-weight:700;font-size:11.5px;cursor:pointer">&#11015; Salva zona offline</button>
+  </div>
+  <div class="hint">Tocca il mare per profondità e fondale.<br>Righello ON: tocca riva &rarr; meta.</div>
+</div>
+
+<div id="legend"></div>
+<div id="profile"><div class="phd"><span id="profTxt"></span><button id="profClose" title="Chiudi">&#10005;</button></div><canvas id="profCv" width="900" height="192"></canvas><div id="preyRow"></div></div>
+<div id="preyPanel"><div class="mfHd"><b>&#127907; Prede probabili &mdash; litorale di Sabaudia</b><button id="preyClose">&#10005;</button></div>
+<div id="preyTimeSel" class="ptime"><span data-t="all" class="on" onclick="setPreyTime('all')">Tutti</span><span data-t="g" onclick="setPreyTime('g')">&#9728;&#65039; Giorno</span><span data-t="n" onclick="setPreyTime('n')">&#127769; Notte</span></div>
+<div id="preyBody"></div></div>
+<div id="info"></div>
+<div id="markForm">
+  <div class="mfHd"><b>&#128205; Punto / cattura</b><button id="mfClose" title="Chiudi">&#10005;</button></div>
+  <div id="mfAuto"></div>
+  <input id="mfSpecie" list="specieList" placeholder="Specie pescata (opz.)" autocomplete="off">
+  <datalist id="specieList">
+    <option>Spigola (branzino)</option><option>Orata</option><option>Mormora</option><option>Sarago</option>
+    <option>Occhiata</option><option>Leccia</option><option>Ombrina</option><option>Grongo</option>
+    <option>Anguilla</option><option>Cefalo (muggine)</option><option>Sugarello</option><option>Aguglia</option>
+    <option>Tracina</option><option>Sogliola</option><option>Razza</option><option>Boga</option><option>Salpa</option>
+  </datalist>
+  <input id="mfPeso" placeholder="Peso / taglia (opz.)" autocomplete="off">
+  <input id="mfNote" placeholder="Note: esca, mareggiata, orario&hellip; (opz.)" autocomplete="off">
+  <div class="mfBtns"><button id="mfCancel">Annulla</button><button id="mfSave">Salva</button></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/geotiff@2.1.3/dist-browser/geotiff.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/proj4@2.11.0/dist/proj4.js"></script>
+<script src="engine.js"></script>
+<script>if('serviceWorker' in navigator){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(reg){reg.update&&reg.update();}).catch(function(){});
+  var refreshing=false; navigator.serviceWorker.addEventListener('controllerchange',function(){ if(refreshing)return; refreshing=true; location.reload(); });});}</script>
+</body>
+</html>

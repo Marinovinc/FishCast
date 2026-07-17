@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FishCast — Guida per iniziare</title>
+<style>
+  :root{--bg:#06121f;--card:#0e1f33;--line:#1f3650;--cy:#16e0ff;--txt:#dfeaf5;--sub:#8fb0cc}
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(#06121f,#081a2c);color:#dfeaf5;font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:0 0 60px}
+  header{position:sticky;top:0;z-index:5;background:rgba(6,18,31,.92);backdrop-filter:blur(6px);border-bottom:1px solid #1f3650;padding:14px 18px}
+  header h1{margin:0;font-size:19px;letter-spacing:.2px}
+  header .t{color:#8fb0cc;font-size:12.5px;margin-top:2px}
+  .wrap{max-width:720px;margin:0 auto;padding:0 18px}
+  .lead{background:#0e1f33;border:1px solid #1f3650;border-radius:14px;padding:16px 18px;margin:18px 0}
+  .lead b{color:#16e0ff}
+  .step{background:#0e1f33;border:1px solid #1f3650;border-radius:14px;padding:16px 18px;margin:16px 0;overflow:hidden}
+  .step h2{display:flex;align-items:center;gap:10px;margin:0 0 8px;font-size:17px}
+  .n{flex:0 0 30px;width:30px;height:30px;border-radius:50%;background:#16e0ff;color:#04121e;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .step p{margin:8px 0;color:#cfe0f0}
+  .cap{text-align:center;color:#8fb0cc;font-size:12px;margin:0 0 4px}
+  .tip{background:#12283f;border-left:3px solid #16e0ff;border-radius:8px;padding:9px 12px;margin:10px 0;font-size:14px;color:#bfd6ea}
+  .warn{background:#2a2413;border-left:3px solid #ffd54a;border-radius:8px;padding:9px 12px;margin:10px 0;font-size:14px;color:#e9dcae}
+  kbd{background:#11243c;border:1px solid #2a4870;border-radius:6px;padding:1px 7px;font-size:13px;color:#dfeaf5;white-space:nowrap}
+  .ico{display:inline-block;background:#11243c;border:1px solid #2a4870;border-radius:8px;padding:2px 8px;font-weight:700;white-space:nowrap}
+  .btnrow{text-align:center;margin:26px 0 8px}
+  a.cta{display:inline-block;background:#16e0ff;color:#04121e;font-weight:800;text-decoration:none;padding:13px 26px;border-radius:12px;font-size:16px}
+  ul{margin:8px 0;padding-left:20px}li{margin:5px 0;color:#cfe0f0}
+  .rail{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+  .rail .r{flex:1 1 140px;background:#0c1c2e;border:1px solid #23415f;border-radius:11px;padding:9px 11px;font-size:13px;color:#cfe0f0}
+  .rail .r b{color:#16e0ff}
+  .foot{color:#6f8aa6;font-size:12px;text-align:center;margin-top:28px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎣 FishCast — Guida per iniziare</h1>
+  <div class="t">Tutto quello che serve, spiegato passo passo. Nessuna esperienza richiesta.</div>
+</header>
+
+<div class="wrap">
+
+  <div class="lead">
+    <b>Cos'è.</b> FishCast ti mostra <b>com'è fatto il fondale sottocosta</b> — i primi 200-300 metri dove lanci le esche: profondità, secche e buche, canaloni, tipo di fondo (sabbia/roccia/Posidonia). Puoi <b>segnare i punti buoni</b>, <b>registrare le catture</b>, misurare i lanci e usare la mappa <b>anche senza campo</b> in spiaggia.
+    <div class="warn" style="margin-top:12px">⚠️ Le profondità del satellite sono una <b>stima</b> (valida in acqua limpida fino a ~15-18 m). Servono a capire la <b>morfologia</b> del fondale, non a sostituire lo scandaglio.</div>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">1</span> Installala sul telefono</h2>
+    <p>Apri il link nel browser del telefono (Chrome o Safari): parte da sola la <b>versione mobile</b>. Per averla come una vera app con l'icona:</p>
+    <ul>
+      <li><b>Android/Chrome:</b> menu <kbd>⋮</kbd> → <kbd>Aggiungi a schermata Home</kbd></li>
+      <li><b>iPhone/Safari:</b> <kbd>Condividi ↑</kbd> → <kbd>Aggiungi a Home</kbd></li>
+    </ul>
+    <p>Funziona <b>offline</b>: una volta aperta resta disponibile anche senza rete.</p>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">2</span> Come è fatta la schermata</h2>
+    <p>Tutto lo schermo è la <b>mappa</b>. I comandi sono nelle icone sul <b>lato destro</b> (la "barra"):</p>
+    <div class="rail">
+      <div class="r"><b>🎚️ Livelli</b> — apre il pannello per accendere/spegnere profondità, canaloni, carte</div>
+      <div class="r"><b>📍 GPS</b> — mostra e segue la tua posizione</div>
+      <div class="r"><b>📏 Righello</b> — misura la distanza di lancio</div>
+      <div class="r"><b>🎣 Segna</b> — registra un punto o una cattura</div>
+      <div class="r"><b>🐟 Prede</b> — le specie probabili con esche e tecniche</div>
+    </div>
+    <p>In <b>alto</b>: il nome dell'app, il menu <b>🔍 località</b> per saltare a uno spot, il <b>＋</b> per salvare un posto e il <b>?</b> per questa guida.</p>
+    <div class="tip">💡 Tocca <span class="ico">🎚️ Livelli</span>: sale dal basso un pannello. Per chiuderlo, tocca la <b>✕</b> o fuori dal pannello. Occupa metà schermo, così vedi ancora la mappa.</div>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">3</span> Vedere la profondità del fondale</h2>
+    <p>Apri <span class="ico">🎚️ Livelli</span> e tocca <b>«Profondità SDB 10 m»</b>. Dopo qualche secondo la mappa si colora: <b>chiaro = basso, blu scuro = profondo</b>. Le <b>linee bianche</b> sono le isobate (−2, −5, −10, −15 m), come le curve di livello del fondale. È <b>il metodo giusto per il sottocosta</b>: la vecchia batimetria EMODnet era troppo grossolana (celle ~115 m) per i primi metri dalla riva.</p>
+    <div class="tip">🛰️ <b>«Composito +preciso»</b>: fa la media di più giornate senza nuvole, riducendo onde e torbidità (qualche secondo in più).</div>
+    <div class="tip">📈 <b>«Linee batimetriche»</b>: disegna le curve di profondità con l'etichetta in metri. Funziona <b>anche da sola</b> (linee nitide sopra la foto del fondale). <b>«Fitte 0,5 m sottoriva»</b> le infittisce nella fascia della risacca (mormore, spigole).</div>
+    <div class="tip">🌊 <b>«Canaloni / rip»</b>: evidenzia i solchi più profondi tra le barre. Mette dei <b>pin</b>: 🎣 <b>verdi</b> = canaloni sotto riva, a portata di lancio (i più utili!); 🌀 <b>viola</b> = canaloni esterni verso il largo. Tocca un pin per la profondità e la distanza dalla riva.</div>
+    <div class="tip">🎚️ Con lo slider <b>Prof.</b> regoli quanto il colore copre il satellite. Con <b>Data</b> scegli una foto di un altro giorno. Se sposti o zoomi la mappa, la profondità si <b>ricalcola da sola</b> per la nuova zona.</div>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">4</span> Tocca il mare: profondità + tipo di fondo</h2>
+    <p>Tocca un punto qualsiasi sul mare: in basso compare la <b>profondità</b> stimata e, dove disponibile, il <b>tipo di fondale</b> (sabbia, roccia, Posidonia). Serve a capire dove tenere l'esca.</p>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">5</span> Il righello di lancio</h2>
+    <p>Tocca <span class="ico">📏 Righello</span>, poi tocca il punto <b>A</b> (la riva) e il punto <b>B</b> (dove cade l'esca): la <b>distanza in metri appare sulla linea</b>. Puoi <b>trascinare A e B</b> per aggiustarli. Un surfcasting tipico arriva a 80-150 m.</p>
+    <div class="tip">🎯 <b>Aggancio ai punti (novità).</b> Con il righello attivo, <b>tocca direttamente un canalone</b> (o una cattura, o la tua posizione GPS): il punto <b>B si posiziona esattamente lì</b>. Così misuri al metro quanto dista un canalone esterno, senza mirare a mano.</div>
+    <div class="tip">📉 Se hai la <b>profondità (SDB)</b> attiva, in basso compare il <b>profilo del fondale</b> lungo la linea: dove scende, dove sono le buche e gli scaloni. <b>Tocca il grafico</b> per vedere distanza e profondità in quel punto (un pallino giallo scorre sulla linea A-B).</div>
+    <div class="tip">🐟 Sotto il profilo compaiono le <b>prede probabili</b> a quella distanza, affinate per <b>stagione</b> e <b>tipo di fondo</b> nel punto d'arrivo.</div>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">6</span> Riconoscere i porti (novità)</h2>
+    <p>Dentro un porto non si pesca: FishCast <b>non ci mette i punti di pesca</b>. Dove i porti sono mappati (OpenStreetMap) vengono <b>riconosciuti da soli</b> ed evidenziati in <b>arancio</b>; i canaloni al loro interno non compaiono.</p>
+    <div class="tip">🚫 <b>Se un canalone finto spunta dentro un porto</b> non mappato: toccalo e premi <b>«🚫 qui è un porto (escludi)»</b>. Compare una <b>zona rossa</b> e i punti lì spariscono. La zona resta salvata sul telefono.</div>
+    <div class="tip">↔️ <b>Raggio regolabile.</b> Tocca la zona rossa: con lo <b>slider</b> allarghi o stringi il cerchio dal vivo (40–500 m) per coprire esattamente il porto. Da lì puoi anche <b>rimuovere</b> la zona.</div>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">7</span> «Sei qui» — la tua posizione GPS</h2>
+    <p>Tocca <span class="ico">📍 GPS</span>: l'app trova la tua posizione (puntino azzurro) e ti segue mentre cammini sulla battigia, così sai <b>dove sei</b> rispetto a secche e buche. Tocca di nuovo per spegnerlo.</p>
+    <div class="tip">💡 La prima volta il telefono chiede il permesso di usare la posizione: rispondi <b>Consenti</b>.</div>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">8</span> Segna un punto e registra una cattura</h2>
+    <p>Tocca <span class="ico">🎣 Segna</span>, poi <b>tocca il punto</b> sulla mappa. Si apre una scheda: scrivi la <b>specie</b> (o scegline una dall'elenco), il peso e una nota. <b>Data, ora, coordinate, profondità e tipo di fondo li mette da solo.</b> Premi <b>Salva</b>.</p>
+    <p>I tuoi punti restano sul telefono: li accendi/spegni da <span class="ico">🎚️ Livelli</span> → <b>«I miei punti»</b>. Toccando un pin vedi i dettagli e puoi cancellarlo.</p>
+    <div class="tip">⚠️ Se il punto è dentro un porto, la scheda te lo segnala — ma puoi salvarlo lo stesso: decidi tu.</div>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">9</span> Le prede probabili</h2>
+    <p>Tocca <span class="ico">🐟 Prede</span>: una scheda con tutte le specie del litorale divise per fascia di distanza (sottoriva / media / lontano). Quelle <b>in grigio</b> sono fuori stagione ora. In cima scegli <b>Tutti / ☀️ Giorno / 🌙 Notte</b>. <b>Tocca una specie</b> per esca e tecnica consigliate.</p>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">10</span> Strumenti (nel pannello Livelli)</h2>
+    <p>In fondo a <span class="ico">🎚️ Livelli</span>, sezione <b>Strumenti</b>:</p>
+    <ul>
+      <li><b>🏠 Imposta partenza qui</b> — l'app si aprirà sempre sullo spot inquadrato.</li>
+      <li><b>🎯 Calibra profondità</b> — vedi il passo 11.</li>
+      <li><b>⬇️ Salva zona offline</b> — vedi il passo 12.</li>
+    </ul>
+    <p>Sempre nel pannello trovi <b>Substrato</b> e <b>Posidonia</b> (mappe ufficiali del tipo di fondo: la prateria verde è spesso zona di pesce ma impiglia l'esca) e la <b>Carta nautica</b> (segnali e boe dove mappati).</p>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">11</span> Profondità più precise (calibrazione)</h2>
+    <p>Se conosci la profondità reale di qualche punto (dalla <b>carta nautica</b> o dallo <b>scandaglio</b>), puoi migliorare la stima:</p>
+    <ul>
+      <li>Apri <span class="ico">🎚️ Livelli</span> → <b>🎯 Calibra profondità</b>.</li>
+      <li>Tocca un punto e scrivi la sua <b>profondità reale in metri</b>.</li>
+      <li>Ripeti per <b>almeno 2 punti</b> (meglio 3-4, uno basso e uno profondo).</li>
+    </ul>
+    <p>Da quel momento i metri diventano più affidabili nella tua zona.</p>
+  </div>
+
+  <div class="step">
+    <h2><span class="n">12</span> Usarla senza campo (offline)</h2>
+    <p>A casa col wifi, inquadra la zona dove pescherai, apri <span class="ico">🎚️ Livelli</span> → <b>⬇️ Salva zona offline</b>. L'app scarica le mappe di quell'area (e l'ultima profondità caricata): sul posto <b>funziona anche senza rete telefonica</b>.</p>
+  </div>
+
+  <div class="lead">
+    <b>In due parole, per una battuta:</b>
+    <ul>
+      <li>A casa: inquadra lo spot → <b>⬇️ Salva zona offline</b>.</li>
+      <li>In spiaggia: <b>📍 GPS</b> per posizionarti, <b>Profondità SDB</b> per leggere il fondale.</li>
+      <li>Studia buche/secche/canaloni e mira con il <b>📏 Righello</b> (aggancia B a un canalone).</li>
+      <li>Preso qualcosa? <b>🎣 Segna</b> → resta memorizzato per la prossima volta.</li>
+    </ul>
+  </div>
+
+  <div class="tip">🖥️ <b>Su PC</b> (versione classica): i comandi non sono nelle icone ma in un <b>pannello in alto a destra</b>; le funzioni sono le stesse.</div>
+
+  <div class="btnrow"><a class="cta" href="./">🎣 Apri FishCast</a></div>
+
+  <div class="foot">FishCast · fondale satellitare (stima Sentinel-2/Copernicus) · dati EMODnet · porti OpenStreetMap · mappe Esri/OSM<br>Le profondità sono indicative: usa sempre buonsenso e attrezzatura adeguata in mare.<br><a href="privacy.html" style="color:#8fb0cc">Informativa sulla privacy</a></div>
+
+</div>
+</body>
+</html>

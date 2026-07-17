@@ -133,6 +133,7 @@
   .rmk{width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;background:#ff5be0;border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.6);cursor:grab}
   .rlbl{position:absolute;transform:translate(-50%,-50%);background:rgba(255,91,224,.95);color:#fff;font-weight:800;font-size:12px;padding:2px 8px;border-radius:10px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.5)}
 </style>
+<script src="i18n.js"></script>
 </head>
 <body>
 <div id="map"></div>
@@ -157,11 +158,11 @@
 
 <!-- ===== RIGHT RAIL ===== -->
 <div id="rail">
-  <div class="railbtn" id="layersBtn">&#127899;<small>Livelli</small></div>
-  <button class="railbtn" id="btnGps">&#128205;<small>GPS</small></button>
-  <label class="railbtn"><input type="checkbox" id="lRuler">&#128207;<small>Righello</small></label>
-  <button class="railbtn mark" id="btnMark">&#127907;<small>Segna</small></button>
-  <button class="railbtn" id="btnPrey">&#128031;<small>Prede</small></button>
+  <div class="railbtn" id="layersBtn">&#127899;<small data-i18n="rail.layers">Livelli</small></div>
+  <button class="railbtn" id="btnGps">&#128205;<small data-i18n="rail.gps">GPS</small></button>
+  <label class="railbtn"><input type="checkbox" id="lRuler">&#128207;<small data-i18n="rail.ruler">Righello</small></label>
+  <button class="railbtn mark" id="btnMark">&#127907;<small data-i18n="rail.mark">Segna</small></button>
+  <button class="railbtn" id="btnPrey">&#128031;<small data-i18n="rail.prey">Prede</small></button>
 </div>
 
 <!-- ===== INFO CARD ===== -->
@@ -205,40 +206,41 @@
 <div id="backdrop"></div>
 <div id="layerSheet">
   <div class="grab"></div>
-  <div class="sheetH"><b>Livelli</b><button id="sheetClose">&#10005;</button></div>
+  <div class="sheetH"><b data-i18n="sheet.title">Livelli</b><button id="sheetClose">&#10005;</button></div>
 
   <div class="seg">
-    <label><input type="radio" name="base" id="baseSat" checked>&#128752;&#65039; Satellitare</label>
-    <label><input type="radio" name="base" id="baseOsm">&#128506;&#65039; Mappa</label>
+    <label><input type="radio" name="base" id="baseSat" checked><span data-i18n="sheet.sat">&#128752;&#65039; Satellitare</span></label>
+    <label><input type="radio" name="base" id="baseOsm"><span data-i18n="sheet.map">&#128506;&#65039; Mappa</span></label>
   </div>
 
-  <div class="grpT">Batimetria</div>
+  <div class="grpT" data-i18n="grp.bathy">Batimetria</div>
   <div class="lgrid">
-    <label class="chip"><input type="checkbox" id="lSdb">Profondit&agrave; SDB</label>
-    <label class="chip"><input type="checkbox" id="lSdbComp">Composito</label>
-    <label class="chip"><input type="checkbox" id="lIso">Linee batim.</label>
-    <label class="chip"><input type="checkbox" id="lIsoFine">Fitte 0,5&nbsp;m</label>
-    <label class="chip"><input type="checkbox" id="lCanal">Canaloni</label>
+    <label class="chip"><input type="checkbox" id="lSdb"><span data-i18n="lyr.sdb">Profondit&agrave; SDB</span></label>
+    <label class="chip"><input type="checkbox" id="lSdbComp"><span data-i18n="lyr.comp">Composito</span></label>
+    <label class="chip"><input type="checkbox" id="lIso"><span data-i18n="lyr.iso">Linee batim.</span></label>
+    <label class="chip"><input type="checkbox" id="lIsoFine"><span data-i18n="lyr.isofine">Fitte 0,5&nbsp;m</span></label>
+    <label class="chip"><input type="checkbox" id="lCanal"><span data-i18n="lyr.canal">Canaloni</span></label>
   </div>
-  <div class="rng" id="sdbDateRow" style="display:none"><span>Data</span><select id="sdbDate"></select></div>
-  <div class="rng">Prof. <input type="range" id="ovSdb" min="0" max="100" value="70"><b id="ovSdbV">70%</b></div>
+  <div class="rng" id="sdbDateRow" style="display:none"><span data-i18n="rng.data">Data</span><select id="sdbDate"></select></div>
+  <div class="rng"><span data-i18n="rng.depth">Prof.</span> <input type="range" id="ovSdb" min="0" max="100" value="70"><b id="ovSdbV">70%</b></div>
 
-  <div class="grpT">Fondale &amp; carte</div>
+  <div class="grpT" data-i18n="grp.bottom">Fondale &amp; carte</div>
   <div class="lgrid">
-    <label class="chip"><input type="checkbox" id="lContours" checked>Isobate EMODnet</label>
-    <label class="chip"><input type="checkbox" id="lSeamark">Carta nautica</label>
-    <label class="chip"><input type="checkbox" id="lSub">Substrato</label>
-    <label class="chip"><input type="checkbox" id="lPos">Posidonia</label>
-    <label class="chip"><input type="checkbox" id="lMarks" checked>I miei punti</label>
+    <label class="chip"><input type="checkbox" id="lContours" checked><span data-i18n="lyr.emodnet">Isobate EMODnet</span></label>
+    <label class="chip"><input type="checkbox" id="lSeamark"><span data-i18n="lyr.nautical">Carta nautica</span></label>
+    <label class="chip"><input type="checkbox" id="lSub"><span data-i18n="lyr.substrate">Substrato</span></label>
+    <label class="chip"><input type="checkbox" id="lPos"><span data-i18n="lyr.posidonia">Posidonia</span></label>
+    <label class="chip"><input type="checkbox" id="lMarks" checked><span data-i18n="lyr.marks">I miei punti</span></label>
   </div>
-  <div class="rng">Habitat <input type="range" id="ovHab" min="0" max="100" value="70"><b id="ovHabV">70%</b></div>
+  <div class="rng"><span data-i18n="rng.habitat">Habitat</span> <input type="range" id="ovHab" min="0" max="100" value="70"><b id="ovHabV">70%</b></div>
 
   <div class="acts">
-    <button class="act" id="btnHome">&#127968; Partenza</button>
-    <button class="act" id="btnCalib">&#127919; Calibra</button>
-    <button class="act" id="btnOffline">&#11015; Offline</button>
+    <button class="act" id="btnHome" data-i18n="act.home">&#127968; Partenza</button>
+    <button class="act" id="btnCalib" data-i18n="act.calib">&#127919; Calibra</button>
+    <button class="act" id="btnOffline" data-i18n="act.offline">&#11015; Offline</button>
   </div>
-  <div class="foot2"><a class="g" href="guida.html">&#10067; Guida</a><a class="c" href="index.html?desktop">&#128421;&#65039; Versione PC</a></div>
+  <div class="rng" style="margin-top:6px"><span data-i18n="ui.language">Lingua</span> <select data-i18n-picker style="flex:1;background:rgba(255,255,255,.05);color:var(--ink);border:1px solid var(--bd);border-radius:7px;padding:6px;font-size:12px"></select></div>
+  <div class="foot2"><a class="g" href="guida.html">&#10067; <span data-i18n="foot.guide">Guida</span></a><a class="c" href="index.html?desktop">&#128421;&#65039; <span data-i18n="foot.pc">Versione PC</span></a></div>
 </div>
 
 <!-- wiring del guscio Windy (i controlli sono nativi: qui solo apri/chiudi il pannello livelli) -->

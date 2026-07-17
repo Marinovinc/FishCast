@@ -1,6 +1,6 @@
 // FishCast service worker: precache del guscio app (offline il guscio), CDN cache-first.
 // I DATI (Sentinel-2 COG, STAC, EMODnet WMS/WCS, tile mappa) passano sempre alla rete: sono live/grandi, non vanno in cache.
-const CACHE = 'fishcast-v14';
+const CACHE = 'fishcast-v15';
 const ASSETS = ['./', './index.html', './m.html', './engine.js', './i18n.js', './access.html', './guida.html', './privacy.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));

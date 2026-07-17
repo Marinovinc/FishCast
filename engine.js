@@ -37,7 +37,7 @@ const EMOD='https://ows.emodnet-bathymetry.eu/wms';
 const contours=L.tileLayer.wms(EMOD,{layers:'emodnet:contours',format:'image/png',transparent:true,opacity:0.85,attribution:'&copy; EMODnet Bathymetry'});
 contours.addTo(map);   // isobate EMODnet ON (utili offshore); la batimetria a colori EMODnet e' rimossa: inutile sottocosta (nativo ~115 m) -> si usa la SDB satellitare
 // Carta nautica OpenSeaMap (ODbL): segnali/boe/scandagli dove mappati
-const seamark=L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{y}/{x}.png',{maxZoom:18,opacity:1,attribution:'&copy; OpenSeaMap (ODbL)'});
+const seamark=L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',{maxZoom:18,opacity:1,attribution:'&copy; OpenSeaMap (ODbL)'});
 
 // ---- SUBSTRATO (EUSeaMap 2023) + POSIDONIA (EMODnet Seabed Habitats) ----
 const SBH='https://ows.emodnet-seabedhabitats.eu/geoserver/emodnet_view/wms';

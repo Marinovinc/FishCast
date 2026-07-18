@@ -48,6 +48,9 @@ const posidonia=L.tileLayer.wms(SBH,{layers:'seagrass_eov_poly_2025',format:'ima
 
 function bind(chk,layer){ $(chk).onchange=()=>{ if($(chk).checked) layer.addTo(map); else map.removeLayer(layer); updLegend(); }; }
 bind('lContours',contours); bind('lSub',substrate); bind('lPos',posidonia); bind('lSeamark',seamark);
+// Avviso: OpenSeaMap è un layer SPARSO (segnali solo dove mappati: porti/moli/canali). Su spiaggia libera può non comparire nulla.
+(function(){ const _sm=$('lSeamark'); if(!_sm) return; const _orig=_sm.onchange; _sm.onchange=function(){ if(_orig) _orig.call(_sm);
+  if(_sm.checked){ $('info').style.display='block'; $('info').innerHTML='<b>Carta nautica</b> (OpenSeaMap): segnali, boe e scandagli <b>solo dove mappati</b> (porti, moli, canali). Compaiono <b>facendo zoom</b> e vicino a porti/moli. Su spiaggia libera potrebbe non comparire nulla.'; clearTimeout(window._smT); window._smT=setTimeout(function(){ $('info').style.display='none'; },8000); } }; })();
 // Due slider separati: profondità (SDB + batimetria) e habitat (substrato/Posidonia)
 function updSdbOv(){ const o=$('ovSdb').value/100; $('ovSdbV').textContent=$('ovSdb').value+'%'; if(sdbOverlay) sdbOverlay.setOpacity(o); }
 function updHabOv(){ const o=$('ovHab').value/100; $('ovHabV').textContent=$('ovHab').value+'%'; substrate.setOpacity(o); posidonia.setOpacity(o); }

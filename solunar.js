@@ -273,6 +273,23 @@
   .slDay .st{color:#ffd23a;letter-spacing:1px;flex:1}
   .slDay .mp{color:#8fb0cc;font-size:11px}
   .slFoot{font-size:9.5px;color:#6f8ba0;margin-top:10px;line-height:1.5}
+  .calHd{display:flex;align-items:center;justify-content:space-between;margin:2px 0 6px}
+  .calHd b{color:#eafcff;font-size:14px;text-transform:capitalize}
+  .calNav{background:#0c1c2e;border:1px solid #23415f;color:#16e0ff;font-size:17px;line-height:1;
+    width:34px;height:30px;border-radius:8px;cursor:pointer}
+  .calGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+  .calW{text-align:center;font-size:9.5px;color:#8fb0cc;font-weight:700;padding:1px 0}
+  .calD{position:relative;background:#0c1c2e;border:1px solid #1a3048;border-radius:8px;
+    padding:3px 2px 4px;text-align:center;cursor:pointer;min-height:46px}
+  .calD .dn{display:block;font-size:11.5px;color:#cfe0f2;font-weight:600;line-height:1.2}
+  .calD .bar{display:block;width:60%;margin:2px auto 1px;border-radius:2px}
+  .calD .mn{display:block;font-size:9px;color:#cfe0f2;line-height:1}
+  .calD .mn .mfull{color:#f2f0e4} .calD .mn .mnew{color:#7f97ad}
+  .calD .wx{position:absolute;top:3px;right:3px;width:4px;height:4px;border-radius:50%;background:#16e0ff}
+  .calD.today{border-color:#16e0ff}
+  .calD.sel{background:#123a52;border-color:#16e0ff;box-shadow:0 0 0 1px #16e0ff55}
+  .calLeg{display:flex;flex-wrap:wrap;gap:9px;margin-top:6px;font-size:9.5px;color:#8fb0cc;align-items:center}
+  .calLeg i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:3px;vertical-align:-1px}
   `;
   document.head.appendChild(css);
 
@@ -283,10 +300,10 @@
     '<div class="slMoon"><canvas id="slMoonCv" width="128" height="128"></canvas><div class="mi" id="slMoonTxt"></div></div>' +
     '<div class="slNow" id="slNow"></div>' +
     '<div class="slRow" id="slTimes"></div>' +
-    '<div class="slLbl">' + T('sl.today', 'Periodi di oggi') + '</div>' +
+    '<div class="slLbl" id="slPerLbl">' + T('sl.today', 'Periodi di oggi') + '</div>' +
     '<canvas id="slBar" width="900" height="124"></canvas>' +
     '<div id="slList"></div>' +
-    '<div class="slLbl">' + T('sl.week', 'Prossimi 7 giorni') + '</div>' +
+    '<div class="slLbl">' + T('sl.cal', 'Calendario: i giorni migliori') + '</div>' +
     '<div id="slWeek"></div>' +
     '<div class="slFoot">' + T('sl.note', 'Orari calcolati sul posto dal dispositivo (effemeridi Sole/Luna): funzionano anche senza rete. La teoria solunare è una regola empirica, non una legge dimostrata: usala insieme a mare, vento e marea.') + '</div>';
   document.body.appendChild(sheet);
@@ -311,13 +328,41 @@
   if (el('btnSol')) el('btnSol').onclick = openSol;
 
   const hhmm = d => d ? pad(d.getHours()) + ':' + pad(d.getMinutes()) : '–';
-  const stars = n => '★'.repeat(Math.floor(n)) + (n % 1 >= 0.5 ? '☆' : '') ;
+  const stars = n => '★'.repeat(Math.floor(n)) + (n % 1 >= 0.5 ? '☆' : '');
+  // il voto mostrato e' UNO SOLO: quello del motore del morso (solunare + meteo quando c'e')
+  function dayStars(date, c) {
+    const sc = dayScoreOf(date, c);
+    if (!sc) return '';
+    const v = sc.hasWx ? sc.total : sc.astro;
+    return window.FishCastBite.starStr(window.FishCastBite.stars(v)) + ' <span style="color:#8fb0cc;font-weight:400">' + v + '/100</span>';
+  }
+
+  // stato del pannello: giorno selezionato nel calendario e mese mostrato
+  let selDate = null, calMonth = null, wxData = null;
+  const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
   function openSol() {
+    const now = new Date();
+    selDate = now; calMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    sheet.style.display = 'block';
+    renderSol();
+    // il meteo serve al punteggio di morso del calendario: si prende dalla cache, senza forzare la rete
+    if (window.FishCastWx && window.FishCastWx.get) {
+      const c0 = map.getCenter();
+      window.FishCastWx.get(c0.lat, c0.lng, false).then(d => { if (d) { wxData = d; renderSol(); } }).catch(() => { });
+    }
+  }
+  window.prSolPick = function (iso) { selDate = new Date(iso); renderSol(); };
+  window.prSolMonth = function (delta) {
+    calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + delta, 1);
+    renderSol();
+  };
+
+  function renderSol() {
     const c = map.getCenter();
     const now = new Date();
-    const D = solunarDay(now, c.lat, c.lng);
-    sheet.style.display = 'block';
+    const D = solunarDay(selDate, c.lat, c.lng);
+    const isToday = sameDay(selDate, now);
 
     // --- luna ---
     drawMoon(D.phase);
@@ -328,7 +373,7 @@
       ' · ' + (D.phase.waxing ? T('sl.waxing', 'crescente') : T('sl.waning', 'calante')) + '</span>' +
       '<span>&#9679; ' + T('sl.nextnew', 'nuova') + ' ' + dd(D.phase.nextNew) +
       ' &nbsp;&#9675; ' + T('sl.nextfull', 'piena') + ' ' + dd(D.phase.nextFull) + '</span>' +
-      '<span>' + T('sl.rating', 'giornata') + ': <b style="color:#ffd23a">' + stars(D.stars) + '</b></span>';
+      '<span>' + T('sl.rating', 'giornata') + ': <b style="color:#ffd23a">' + dayStars(selDate, c) + '</b></span>';
 
     // --- orari ---
     el('slTimes').innerHTML =
@@ -337,11 +382,19 @@
       cell('&#127769;&#8593; ' + T('sl.moonrise', 'Luna sorge'), hhmm(D.moon.rise)) +
       cell('&#127769;&#8595; ' + T('sl.moonset', 'Luna tramonta'), hhmm(D.moon.set));
 
-    // --- adesso ---
-    const live = D.periods.find(p => now >= p.from && now <= p.to);
-    const next = D.periods.find(p => p.from > now);
+    // --- adesso (solo se il giorno selezionato e' oggi; altrimenti si mostra il giorno scelto) ---
+    const live = isToday ? D.periods.find(p => now >= p.from && now <= p.to) : null;
+    const next = isToday ? D.periods.find(p => p.from > now) : null;
     const nowBox = el('slNow');
-    if (live) {
+    if (!isToday) {
+      const wd = weekNames(), sc = dayScoreOf(selDate, c);
+      nowBox.className = 'slNow off';
+      nowBox.innerHTML = '&#128197; <b>' + wd[selDate.getDay()] + ' ' + pad(selDate.getDate()) + '/' + pad(selDate.getMonth() + 1) + '</b>' +
+        (sc ? ' — ' + T('bi.score', 'punteggio') + ' <b>' + (sc.hasWx ? sc.total : sc.astro) + '/100</b> · ' +
+          window.FishCastBite.label(sc.hasWx ? sc.total : sc.astro) +
+          (sc.hasWx ? '' : ' <span style="color:#8fb0cc">(' + T('bi.solonly', 'solo solunare: manca il meteo') + ')</span>') : '') +
+        ' <span style="color:#8fb0cc">(' + T('sl.tapback', 'tocca “oggi” nel calendario per tornare') + ')</span>';
+    } else if (live) {
       nowBox.className = 'slNow';
       nowBox.innerHTML = '&#128293; <b>' + (live.major ? T('sl.major', 'Periodo maggiore') : T('sl.minor', 'Periodo minore')) +
         ' ' + T('sl.inprogress', 'in corso') + '</b> — ' + T('sl.until', 'fino alle') + ' ' + hhmm(live.to);
@@ -375,19 +428,67 @@
         '<span class="nt">' + what + '</span></div>';
     }).join('');
 
-    // --- 7 giorni ---
-    const wd = (window.I18N && window.I18N.lang === 'it')
-      ? ['dom', 'lun', 'mar', 'mer', 'gio', 'ven', 'sab']
-      : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    let html = '';
-    for (let k = 0; k < 7; k++) {
-      const dt = new Date(now.getTime() + k * 86400000);
-      const d2 = solunarDay(dt, c.lat, c.lng);
-      html += '<div class="slDay"><span class="d">' + (k === 0 ? T('sl.today_s', 'oggi') : wd[dt.getDay()] + ' ' + dd(dt)) + '</span>' +
-        '<span class="st">' + stars(d2.stars) + '</span>' +
-        '<span class="mp">' + Math.round(d2.phase.illum * 100) + '% · ' + T(d2.phase.name, '') + '</span></div>';
+    const pl = el('slPerLbl');
+    if (pl) pl.textContent = isToday ? T('sl.today', 'Periodi di oggi')
+      : T('sl.periodsof', 'Periodi del') + ' ' + pad(selDate.getDate()) + '/' + pad(selDate.getMonth() + 1);
+
+    drawCalendar(c, now);
+  }
+
+  const weekNames = () => (window.I18N && window.I18N.lang === 'it')
+    ? ['dom', 'lun', 'mar', 'mer', 'gio', 'ven', 'sab'] : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const monthNames = () => (window.I18N && window.I18N.lang === 'it')
+    ? ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre']
+    : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+  // punteggio di un giorno: usa il motore del morso (con il meteo dove c'e'), altrimenti il solo solunare
+  function dayScoreOf(date, c) {
+    if (!window.FishCastBite) return null;
+    return window.FishCastBite.dayScore(date, c.lat, c.lng, wxData);
+  }
+
+  // --- CALENDARIO DEL MESE: un colore per giorno, per scegliere quando andare ---
+  function drawCalendar(c, now) {
+    const y = calMonth.getFullYear(), m = calMonth.getMonth();
+    const first = new Date(y, m, 1), days = new Date(y, m + 1, 0).getDate();
+    const lead = (first.getDay() + 6) % 7;                    // settimana che parte da lunedi'
+    const wd = (window.I18N && window.I18N.lang === 'it') ? ['L', 'M', 'M', 'G', 'V', 'S', 'D'] : ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    let html = '<div class="calHd"><button class="calNav" onclick="prSolMonth(-1)">&#8249;</button>' +
+      '<b>' + monthNames()[m] + ' ' + y + '</b>' +
+      '<button class="calNav" onclick="prSolMonth(1)">&#8250;</button></div>' +
+      '<div class="calGrid">' + wd.map(x => '<div class="calW">' + x + '</div>').join('');
+    for (let k = 0; k < lead; k++) html += '<div></div>';
+    for (let d = 1; d <= days; d++) {
+      const dt = new Date(y, m, d, 12, 0, 0);
+      const sc = dayScoreOf(dt, c);
+      const tot = sc ? (sc.hasWx ? sc.total : sc.astro) : 0;
+      const ph = moonPhase(dt);
+      const cls = 'calD' + (sameDay(dt, selDate) ? ' sel' : '') + (sameDay(dt, now) ? ' today' : '');
+      html += '<div class="' + cls + '" onclick="prSolPick(\'' + dt.toISOString() + '\')">' +
+        '<span class="dn">' + d + '</span>' +
+        '<span class="bar" style="background:' + scoreColor(tot) + ';height:' + Math.max(3, Math.round(tot / 100 * 16)) + 'px"></span>' +
+        '<span class="mn">' + moonGlyph(ph) + '</span>' +
+        (sc && sc.hasWx ? '<span class="wx"></span>' : '') + '</div>';
     }
+    html += '</div>' +
+      '<div class="calLeg"><span><i style="background:#ff6b6b"></i>' + T('bi.bad', 'scarso') + '</span>' +
+      '<span><i style="background:#ffd23a"></i>' + T('bi.fair', 'discreto') + '</span>' +
+      '<span><i style="background:#8dff3a"></i>' + T('bi.excellent', 'ottimo') + '</span>' +
+      '<span>&#9679; ' + T('cal.wxday', 'con meteo') + '</span></div>';
     el('slWeek').innerHTML = html;
+  }
+  // Scala del CALENDARIO, diversa da quella oraria: i voti dei giorni si concentrano nella fascia
+  // 60-100 (nessun giorno e' astronomicamente "da zero"), quindi con le soglie orarie il mese
+  // usciva tutto dello stesso colore. Resta una scala ASSOLUTA, uguale ogni mese: non e' un
+  // "migliore del mese" relativo, che ingannerebbe nei mesi mediocri.
+  const scoreColor = s => s >= 88 ? '#8dff3a' : s >= 80 ? '#c6f24a' : s >= 72 ? '#ffd23a' : s >= 64 ? '#ff9f4a' : '#ff6b6b';
+  // simbolo della fase: pieno/nuovo/quarti evidenziati, il resto piu' tenue
+  function moonGlyph(ph) {
+    const pc = ph.illum * 100;
+    if (pc > 98.5) return '<b class="mfull">&#9679;</b>';
+    if (pc < 1.5) return '<b class="mnew">&#9675;</b>';
+    if (pc >= 46 && pc <= 54) return ph.waxing ? '&#9686;' : '&#9687;';
+    return '<span style="opacity:.45">' + (ph.waxing ? '&#9686;' : '&#9687;') + '</span>';
   }
   function cell(k, v) { return '<div class="slC"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>'; }
 

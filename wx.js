@@ -65,6 +65,7 @@
     '<div id="wxWarn"></div>' +
     '<div id="wxSpin">' + T('wx.loading', 'Carico i dati…') + '</div>' +
     '<div id="wxBody" style="display:none">' +
+    '<div id="biteBox"></div>' +
     '<div class="wxGrid" id="wxNow"></div>' +
     '<div class="wxLbl">' + T('wx.chart', 'Vento e onda — 48 h') +
     ' <span style="color:#16e0ff">— ' + T('wx.wave', 'Onda') + '</span>' +
@@ -201,7 +202,9 @@
   }
 
   // ---------------- RENDER ----------------
+  let last = null;                          // ultimo dato reso: lo usa anche il punteggio di morso
   function render(d, stale) {
+    last = d;
     el('wxSpin').style.display = 'none';
     el('wxBody').style.display = 'block';
     if (stale) warn(T('wx.stale', 'Dati non aggiornati (sei offline o il servizio non risponde).'));
@@ -246,6 +249,7 @@
 
     drawChart(fh, mh, i, mi);
     drawTide(mh, mi);
+    if (window.FishCastBite) window.FishCastBite.render(d);   // punteggio di morso in cima al pannello
   }
   function tile(k, v, s, cl) {
     return '<div class="wxT"><div class="k">' + k + '</div><div class="v ' + (cl || '') + '">' + v + '</div><div class="s">' + (s || '') + '</div></div>';
@@ -375,5 +379,14 @@
     txt.innerHTML += ' <span style="color:#6f8ba0">&middot; ' + T('wx.tidenote', 'escursione mediterranea ridotta; valore modellato, non da mareografo') + '</span>';
   }
 
-  window.FishCastWx = { open: openWx };   // apertura anche da altri punti dell'app
+  // API per gli altri moduli (punteggio di morso, calendario): dato gia' scaricato oppure dalla cache,
+  // e scaricamento su richiesta senza aprire il pannello.
+  async function getData(lat, lon, allowFetch) {
+    if (last && Math.abs(last.lat - lat) < 0.02 && Math.abs(last.lon - lon) < 0.02) return last;
+    const c = readCache(lat, lon);
+    if (c && (Date.now() - c.t) < WX_TTL_MIN * 60000) return c;
+    if (allowFetch === false) return c;
+    try { const d = await fetchWx(lat, lon); writeCache(d); return d; } catch (e) { return c; }
+  }
+  window.FishCastWx = { open: openWx, get: getData, idxNow: idxNow };
 })();

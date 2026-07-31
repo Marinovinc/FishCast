@@ -1,7 +1,7 @@
 // FishCast service worker: precache del guscio app (offline il guscio), CDN cache-first.
 // I DATI (Sentinel-2 COG, STAC, EMODnet WMS/WCS, tile mappa) passano sempre alla rete: sono live/grandi, non vanno in cache.
-const CACHE = 'fishcast-v16';
-const ASSETS = ['./', './index.html', './m.html', './engine.js', './i18n.js', './access.html', './guida.html', './privacy.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const CACHE = 'fishcast-v17';
+const ASSETS = ['./', './index.html', './m.html', './engine.js', './wx.js', './i18n.js', './access.html', './guida.html', './privacy.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
@@ -12,7 +12,8 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const u = new URL(e.request.url);
   // dati dinamici/grandi -> sempre rete, niente cache
-  if (u.hostname.includes('sentinel-cogs') || u.hostname.includes('earth-search') || u.hostname.includes('emodnet') || u.pathname.endsWith('.tif')) return;
+  // open-meteo: previsioni che scadono -> mai dal cache del SW (la freschezza la gestisce wx.js in localStorage)
+  if (u.hostname.includes('sentinel-cogs') || u.hostname.includes('earth-search') || u.hostname.includes('emodnet') || u.hostname.includes('open-meteo') || u.pathname.endsWith('.tif')) return;
   // tessere mappa base (satellite/OSM) -> cache-first: offline dalla zona salvata, altrimenti rete
   if (u.hostname.includes('arcgisonline') || u.hostname.includes('openstreetmap')) {
     e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));

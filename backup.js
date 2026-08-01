@@ -57,7 +57,13 @@
   async function doExport() {
     const data = collect(), n = counts(data);
     if (!n.marks && !n.calib && !n.places && !n.ports) { msg(T('bk.empty', 'Non c\'è ancora niente da salvare.'), true); return; }
+    let photos = null;
+    if (window.FishCastPhotos) {
+      const ids = (data.pr_marks || []).map(m => m.photo).filter(Boolean);
+      if (ids.length) { msg(T('bk.packing', 'Preparo il file con le foto…')); photos = await window.FishCastPhotos.exportAll(ids).catch(() => null); }
+    }
     const payload = { app: 'FishCast', format: FORMAT, exportedAt: new Date().toISOString(), counts: n, data: data };
+    if (photos && Object.keys(photos).length) payload.photos = photos;
     const txt = JSON.stringify(payload, null, 1);
     const blob = new Blob([txt], { type: 'application/json' });
     const name = fileName();
@@ -93,6 +99,7 @@
         ' · <b>' + n.calib + '</b> ' + T('bk.calib', 'calibrazioni') +
         ' · <b>' + n.places + '</b> ' + T('bk.places', 'località') +
         ' · <b>' + n.ports + '</b> ' + T('bk.ports', 'porti esclusi') +
+        (p.photos ? ' · <b>' + Object.keys(p.photos).length + '</b> ' + T('bk.photos', 'foto') : '') +
         (when ? '<br><span style="color:#8fb0cc">' + T('bk.made', 'creato il') + ' ' + when + '</span>' : '');
     };
     r.onerror = () => msg(T('bk.badfile', 'File non leggibile: non è un backup di FishCast.'), true);
@@ -119,6 +126,7 @@
       if (inc[k] === undefined) { if (mode === 'replace') localStorage.removeItem(k); return; }
       if (mode === 'replace' || localStorage.getItem(k) === null) localStorage.setItem(k, inc[k]);
     });
+    if (pending.photos && window.FishCastPhotos) window.FishCastPhotos.importAll(pending.photos).catch(() => { });
     pending = null;
     el('bkConfirm').style.display = 'none';
     const txt = (mode === 'replace' ? T('bk.replaced', 'Dati sostituiti:') : T('bk.merged', 'Dati aggiunti:')) +
@@ -179,7 +187,13 @@
       '<br>&#127907; <b>' + n.marks + '</b> ' + T('bk.marks', 'catture/punti') +
       ' &nbsp;&#127919; <b>' + n.calib + '</b> ' + T('bk.calib', 'calibrazioni') +
       '<br>&#11088; <b>' + n.places + '</b> ' + T('bk.places', 'località') +
-      ' &nbsp;&#9875; <b>' + n.ports + '</b> ' + T('bk.ports', 'porti esclusi');
+      ' &nbsp;&#9875; <b>' + n.ports + '</b> ' + T('bk.ports', 'porti esclusi') +
+      '<span id="bkPh"></span>';
+    if (window.FishCastPhotos) window.FishCastPhotos.usage().then(u => {
+      const e = el('bkPh');
+      if (e && u.count) e.innerHTML = '<br>&#128247; <b>' + u.count + '</b> ' + T('bk.photos', 'foto') +
+        ' (' + (u.bytes / 1048576).toFixed(1).replace('.', ',') + ' MB)';
+    }).catch(() => { });
   }
   function open() { refresh(); el('bkConfirm').style.display = 'none'; el('bkMsg').style.display = 'none'; sheet.style.display = 'block'; if (window.closeSheet) window.closeSheet(); }
 

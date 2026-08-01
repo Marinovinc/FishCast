@@ -711,6 +711,7 @@ function popupHtml(m,idx){
   let h='';
   if(m.specie) h+='<b>'+esc(m.specie)+'</b>'+(m.peso?(' &middot; '+esc(m.peso)):'')+'<br>'; else h+='<b>Punto</b><br>';
   if(m.note) h+='<i>'+esc(m.note)+'</i><br>';
+  if(m.photo) h+='<div class="prPhoto" data-ph="'+esc(m.photo)+'"></div>';   // riempito da photos.js all'apertura del popup
   h+='<span style="color:#8fb0cc;font-size:11px">'+when+'<br>'+m.lat.toFixed(5)+', '+m.lng.toFixed(5)+
      '<br>prof: '+fmtDepth(m.depth)+(m.fondale?(' &middot; fondale: '+esc(m.fondale)):'')+'</span>'+
      '<br><button class="prDelBtn" onclick="prDelMark('+idx+')">Elimina</button>';
